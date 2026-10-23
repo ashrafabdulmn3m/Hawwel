@@ -4,6 +4,7 @@ import Combine
 
 struct ContentView: View {
     @AppStorage("showMenuBar") private var showMenuBar = true
+    @Environment(\.dismissWindow) private var dismissWindow // last edit 22oct
     @EnvironmentObject var engine: Engine
     @State private var testText = ""
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -54,5 +55,18 @@ struct ContentView: View {
         .padding(24)
         .frame(width: 440)
         .onReceive(tick) { _ in engine.trusted = AXIsProcessTrusted() }
+        .onAppear {
+            if !AppMode.launchHandled {
+                AppMode.launchHandled = true
+                let firstRun = !UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
+                UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+                // مش أول مرة والمنيو بار شغّال: نخفي النافذة ونفضل في المنيو بار
+                if !firstRun && AppMode.menuBarEnabled {
+                    dismissWindow(id: "main")
+                    return
+                }
+            }
+            AppMode.showDock()
+        } //last edit on appear 22oct
     }
 }
