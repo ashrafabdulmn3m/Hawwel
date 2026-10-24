@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths: ['HawwelWin/**', '.github/workflows/windows.yml']
-    tags: ['v*']
+    tags: ['win-v*']
   workflow_dispatch:
 
 permissions:
@@ -31,7 +31,7 @@ jobs:
         shell: pwsh
         run: |
           $ver = "1.0.0"
-          if ("${{ github.ref_type }}" -eq "tag") { $ver = "${{ github.ref_name }}".TrimStart("v") }
+          if ("${{ github.ref_type }}" -eq "tag") { $ver = "${{ github.ref_name }}" -replace '^win-v','' }
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$ver" HawwelWin\installer\Hawwel.iss
 
       - uses: actions/upload-artifact@v4
@@ -43,4 +43,5 @@ jobs:
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
+          name: Hawwel for Windows ${{ github.ref_name }}
           files: HawwelWin/dist/Hawwel-Setup.exe
