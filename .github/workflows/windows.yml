@@ -3,7 +3,7 @@ name: Build Hawwel (Windows)
 on:
   push:
     branches: [main]
-    paths: ['windows/**', '.github/workflows/windows.yml']
+    paths: ['HawwelWin/**', '.github/workflows/windows.yml']
     tags: ['v*']
   workflow_dispatch:
 
@@ -21,7 +21,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Publish (single-file, self-contained)
-        working-directory: windows
+        working-directory: HawwelWin
         run: dotnet publish HawwelWin.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o out
 
       - name: Install Inno Setup
@@ -32,15 +32,15 @@ jobs:
         run: |
           $ver = "1.0.0"
           if ("${{ github.ref_type }}" -eq "tag") { $ver = "${{ github.ref_name }}".TrimStart("v") }
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$ver" windows\installer\Hawwel.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$ver" HawwelWin\installer\Hawwel.iss
 
       - uses: actions/upload-artifact@v4
         with:
           name: Hawwel-Setup
-          path: windows/dist/Hawwel-Setup.exe
+          path: HawwelWin/dist/Hawwel-Setup.exe
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
-          files: windows/dist/Hawwel-Setup.exe
+          files: HawwelWin/dist/Hawwel-Setup.exe
