@@ -1,0 +1,51 @@
+<Window x:Class="Hawwel.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hawwel - حوّل" Width="480" SizeToContent="Height"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        FlowDirection="RightToLeft" FontFamily="Segoe UI" FontSize="14"
+        Background="{StaticResource Bg}" PreviewKeyDown="Window_PreviewKeyDown"
+        Icon="pack://application:,,,/Assets/hawwel.ico">
+    <StackPanel Margin="24">
+
+        <TextBlock Text="Hawwel" FontSize="30" FontWeight="Bold" Foreground="{StaticResource Ink}"/>
+        <TextBlock Text="حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار"
+                   Foreground="{StaticResource Muted}" Margin="0,2,0,18" TextWrapping="Wrap"/>
+
+        <Border Style="{StaticResource CardBox}" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="الاختصار" Style="{StaticResource CardTitle}"/>
+                <DockPanel LastChildFill="False">
+                    <TextBlock x:Name="HotkeyText" DockPanel.Dock="Left" FontSize="16" FontWeight="SemiBold"
+                               VerticalAlignment="Center" FlowDirection="LeftToRight"/>
+                    <Button x:Name="RecordBtn" DockPanel.Dock="Right" Content="غيّر الاختصار"
+                            Style="{StaticResource PillButton}" Click="Record_Click"/>
+                </DockPanel>
+                <TextBlock x:Name="HotkeyMsg" Foreground="#B45309" FontSize="12" Margin="0,8,0,0"
+                           TextWrapping="Wrap" Visibility="Collapsed"/>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource CardBox}" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="جرّب هنا" Style="{StaticResource CardTitle}"/>
+                <TextBox x:Name="TestBox" Padding="8,6" AcceptsReturn="False"
+                         ToolTip="اكتب بالكيبورد الغلط، حدده، واضغط الاختصار"/>
+                <TextBlock Text="اكتب بالكيبورد الغلط، حدده، واضغط الاختصار"
+                           FontSize="12" Foreground="{StaticResource Muted}" Margin="0,6,0,0"/>
+                <TextBlock Text="{Binding Status}" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,2,0,0"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource CardBox}">
+            <StackPanel>
+                <CheckBox x:Name="LaunchCheck" Content="شغّل Hawwel مع بداية الجهاز" Click="Launch_Click" Margin="0,0,0,8"/>
+                <CheckBox x:Name="TrayCheck" Content="أظهر Hawwel في الـ System Tray" Click="Tray_Click"/>
+            </StackPanel>
+        </Border>
+
+        <Button Content="خروج من Hawwel" Style="{StaticResource PillButton}" HorizontalAlignment="Left"
+                Margin="0,14,0,0" Click="Quit_Click"/>
+    </StackPanel>
+</Window>
