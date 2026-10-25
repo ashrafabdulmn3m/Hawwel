@@ -3,24 +3,37 @@ using System.Text;
 namespace Hawwel;
 
 /// <summary>
-/// بيبني جدول تحويل بين كيبورد US وكيبورد Arabic (101) من تخطيطات ويندوز نفسها
+/// بيبني جدول تحويل بين كيبورد US وأي كيبورد عربي مثبّت من تخطيطات ويندوز نفسها
 /// (نفس فكرة نسخة الماك اللي بتستخدم UCKeyTranslate)، وبعدين يحوّل النص تلقائياً حسب الاتجاه.
 /// </summary>
 public sealed class LayoutConverter
 {
     private const string UsKlid = "00000409";
-    private const string ArabicKlid = "00000401"; // Arabic (101)
+    private const string ArabicKlid = "00000401"; // Arabic (101): احتياطي لو مفيش كيبورد عربي مثبّت
+    private const uint LangArabic = 0x01;         // اللغة الأساسية: عربي (مصر، السعودية، ...)
 
     private readonly Dictionary<string, string> _enToAr = new();
     private readonly Dictionary<string, string> _arToEn = new();
 
     private LayoutConverter() { }
 
+    /// <summary>أول كيبورد عربي مثبّت عند المستخدم (أي نوع: 101 أو 102 أو غيره، ولأي دولة عربية).</summary>
+    private static IntPtr FindInstalledArabic()
+    {
+        foreach (var h in Native.InstalledLayouts())
+        {
+            uint langId = (uint)((long)h & 0xFFFF);   // الـ LANGID في الجزء الواطي من الـ HKL
+            if ((langId & 0x3FF) == LangArabic) return h;
+        }
+        return IntPtr.Zero;
+    }
+
     /// <summary>بيرجع null لو الكيبوردين مش متاحين.</summary>
     public static LayoutConverter? TryCreate()
     {
         var en = Native.LoadKeyboardLayout(UsKlid, Native.KLF_NOACTIVATE);
-        var ar = Native.LoadKeyboardLayout(ArabicKlid, Native.KLF_NOACTIVATE);
+        var ar = FindInstalledArabic();
+        if (ar == IntPtr.Zero) ar = Native.LoadKeyboardLayout(ArabicKlid, Native.KLF_NOACTIVATE); // احتياطي
         if (en == IntPtr.Zero || ar == IntPtr.Zero) return null;
 
         var c = new LayoutConverter();

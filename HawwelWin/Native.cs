@@ -24,12 +24,23 @@ internal static class Native
     [DllImport("user32.dll")] public static extern uint GetClipboardSequenceNumber();
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern IntPtr LoadKeyboardLayout(string klid, uint flags);
     [DllImport("user32.dll")] public static extern uint MapVirtualKeyEx(uint code, uint mapType, IntPtr hkl);
+    [DllImport("user32.dll")] private static extern int GetKeyboardLayoutList(int nBuff, [Out] IntPtr[]? lpList);
     [DllImport("user32.dll")]
     public static extern int ToUnicodeEx(uint vk, uint scanCode, byte[] keyState,
         [Out, MarshalAs(UnmanagedType.LPWStr)] System.Text.StringBuilder buf,
         int bufSize, uint flags, IntPtr hkl);
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint SendInput(uint n, INPUT[] inputs, int size);
+
+    /// <summary>الكيبوردات المثبّتة عند المستخدم حالياً (اللي في شريط اللغة).</summary>
+    public static IntPtr[] InstalledLayouts()
+    {
+        int n = GetKeyboardLayoutList(0, null);
+        if (n <= 0) return Array.Empty<IntPtr>();
+        var list = new IntPtr[n];
+        n = GetKeyboardLayoutList(n, list);
+        return list.Take(Math.Max(n, 0)).ToArray();
+    }
 
     public static uint VkFromScan(uint scan, IntPtr hkl) => MapVirtualKeyEx(scan, MAPVK_VSC_TO_VK_EX, hkl);
 

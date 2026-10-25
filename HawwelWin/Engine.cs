@@ -33,7 +33,7 @@ public sealed class Engine : INotifyPropertyChanged
         try
         {
             _converter ??= LayoutConverter.TryCreate();
-            if (_converter == null) { Status = "⚠️ الكيبورد مش لاقيه (US أو Arabic 101)"; return; }
+            if (_converter == null) { Status = "⚠️ مش لاقي كيبورد عربي أو انجليزي، ضيفه من إعدادات اللغة في ويندوز"; return; }
 
             var app = Native.ForegroundProcessName();
             if (app != null && ConsoleApps.Contains(app))
