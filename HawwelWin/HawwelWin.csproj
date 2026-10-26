@@ -12,6 +12,10 @@
     <ApplicationIcon>Assets\hawwel.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Version>1.0.0</Version>
+    <Product>Hawwel</Product>
+    <Company>Ashraf</Company>
+    <Description>Fix text typed with the wrong keyboard layout (English/Arabic)</Description>
+    <Copyright>Copyright (c) Ashraf</Copyright>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>

@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         HotkeyText.Text = HotkeyService.Describe(s.HotkeyModifiers, s.HotkeyVk);
         LaunchCheck.IsChecked = Settings.LaunchAtLogin;
         TrayCheck.IsChecked = s.ShowTray;
+        AutoUpdateCheck.IsChecked = s.AutoCheckUpdates;
         VersionText.Text = "v" + Updater.Current;
         RefreshUpdateUi();
     }
@@ -152,6 +153,12 @@ public partial class MainWindow : Window
 
     private void Tray_Click(object sender, RoutedEventArgs e) =>
         App.Current.SetTrayVisible(TrayCheck.IsChecked == true);
+
+    private void AutoUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        App.Current.Settings.AutoCheckUpdates = AutoUpdateCheck.IsChecked == true;
+        App.Current.Settings.Save();
+    }
 
     private void Quit_Click(object sender, RoutedEventArgs e) => App.Current.Quit();
 

@@ -52,7 +52,8 @@
         <Border Style="{StaticResource CardBox}">
             <StackPanel>
                 <CheckBox x:Name="LaunchCheck" Content="شغّل Hawwel مع بداية الجهاز" Click="Launch_Click" Margin="0,0,0,8"/>
-                <CheckBox x:Name="TrayCheck" Content="أظهر Hawwel في الـ System Tray" Click="Tray_Click"/>
+                <CheckBox x:Name="TrayCheck" Content="أظهر Hawwel في الـ System Tray" Click="Tray_Click" Margin="0,0,0,8"/>
+                <CheckBox x:Name="AutoUpdateCheck" Content="دوّر على التحديثات تلقائياً (بيتصل بـ GitHub بس)" Click="AutoUpdate_Click"/>
             </StackPanel>
         </Border>
 

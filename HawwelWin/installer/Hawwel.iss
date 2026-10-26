@@ -22,6 +22,11 @@ OutputBaseFilename=Hawwel-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+VersionInfoVersion={#MyAppVersion}.0
+VersionInfoProductVersion={#MyAppVersion}
+VersionInfoProductName=Hawwel
+VersionInfoCompany=Ashraf
+VersionInfoDescription=Hawwel Setup
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

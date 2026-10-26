@@ -85,11 +85,11 @@ public partial class App : Application
     private async void StartUpdateChecks()
     {
         _updateTimer = new DispatcherTimer { Interval = TimeSpan.FromHours(12) };
-        _updateTimer.Tick += async (_, _) => await CheckForUpdateAsync(false);
+        _updateTimer.Tick += async (_, _) => { if (Settings.AutoCheckUpdates) await CheckForUpdateAsync(false); };
         _updateTimer.Start();
 
         await Task.Delay(TimeSpan.FromSeconds(8)); // نسيب التطبيق يفتح الأول
-        await CheckForUpdateAsync(false);
+        if (Settings.AutoCheckUpdates) await CheckForUpdateAsync(false);
     }
 
     public async Task<UpdateCheckResult> CheckForUpdateAsync(bool userInitiated)
