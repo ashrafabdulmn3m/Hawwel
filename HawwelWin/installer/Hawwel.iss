@@ -41,7 +41,7 @@ Name: "{autodesktop}\Hawwel"; Filename: "{app}\Hawwel.exe"; Tasks: desktopicon
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Hawwel"; ValueData: """{app}\Hawwel.exe"""; Tasks: startup
 
 [Run]
-Filename: "{app}\Hawwel.exe"; Description: "Launch Hawwel"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Hawwel.exe"; Description: "Launch Hawwel"; Flags: nowait postinstall
 
 [Code]
 // Hawwel بيفضل شغّال في الـ tray، فنقفله قبل التثبيت/الحذف علشان الملف ما يبقاش مقفول

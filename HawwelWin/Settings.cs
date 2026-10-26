@@ -12,6 +12,7 @@ public sealed class Settings
     public uint HotkeyVk { get; set; } = 0x4B; // K
     public bool ShowTray { get; set; } = true;
     public bool HasLaunchedBefore { get; set; }
+    public string LastNotifiedUpdate { get; set; } = ""; // علشان الإشعار ما يتكررش لنفس الإصدار
 
     private static string FilePath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Hawwel", "settings.json");

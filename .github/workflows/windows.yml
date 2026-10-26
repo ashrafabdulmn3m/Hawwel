@@ -20,9 +20,17 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Compute version
+        id: ver
+        shell: pwsh
+        run: |
+          $ver = "1.0.0"
+          if ("${{ github.ref_type }}" -eq "tag") { $ver = "${{ github.ref_name }}" -replace '^win-v','' }
+          "ver=$ver" >> $env:GITHUB_OUTPUT
+
       - name: Publish (single-file, self-contained)
         working-directory: HawwelWin
-        run: dotnet publish HawwelWin.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o out
+        run: dotnet publish HawwelWin.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=${{ steps.ver.outputs.ver }} -o out
 
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
@@ -30,9 +38,7 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: |
-          $ver = "1.0.0"
-          if ("${{ github.ref_type }}" -eq "tag") { $ver = "${{ github.ref_name }}" -replace '^win-v','' }
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$ver" HawwelWin\installer\Hawwel.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=${{ steps.ver.outputs.ver }}" HawwelWin\installer\Hawwel.iss
 
       - uses: actions/upload-artifact@v4
         with:

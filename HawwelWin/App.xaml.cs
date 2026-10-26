@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows;
+using System.Windows.Threading;
 using Forms = System.Windows.Forms;
 
 namespace Hawwel;
@@ -17,6 +18,11 @@ public partial class App : Application
     private MainWindow _window = null!;
     private Mutex? _mutex;
     private EventWaitHandle? _showEvent;
+    private DispatcherTimer? _updateTimer;
+
+    /// <summary>الإصدار الأحدث لو موجود، وإلا null.</summary>
+    public UpdateInfo? PendingUpdate { get; private set; }
+    public event Action? UpdateChanged;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -57,6 +63,8 @@ public partial class App : Application
 
         // مش أول مرة والـ tray شغّال: نفضل مخفيين في الـ tray
         if (firstRun || !Settings.ShowTray) ShowWindow();
+
+        StartUpdateChecks();
     }
 
     // ---- النافذة ----
@@ -70,6 +78,44 @@ public partial class App : Application
         _window.Topmost = true;  // نجيبها قدّام
         _window.Topmost = false;
         _window.Focus();
+    }
+
+    // ---- التحديثات ----
+
+    private async void StartUpdateChecks()
+    {
+        _updateTimer = new DispatcherTimer { Interval = TimeSpan.FromHours(12) };
+        _updateTimer.Tick += async (_, _) => await CheckForUpdateAsync(false);
+        _updateTimer.Start();
+
+        await Task.Delay(TimeSpan.FromSeconds(8)); // نسيب التطبيق يفتح الأول
+        await CheckForUpdateAsync(false);
+    }
+
+    public async Task<UpdateCheckResult> CheckForUpdateAsync(bool userInitiated)
+    {
+        try
+        {
+            var info = await Updater.CheckAsync();
+            PendingUpdate = info;
+            UpdateChanged?.Invoke();
+            if (info == null) return UpdateCheckResult.UpToDate;
+
+            // إشعار مرة واحدة بس لكل إصدار (إلا لو المستخدم هو اللي طلب الفحص)
+            var v = info.Version.ToString();
+            if (!userInitiated && Settings.LastNotifiedUpdate != v)
+            {
+                Settings.LastNotifiedUpdate = v;
+                Settings.Save();
+                if (Settings.ShowTray)
+                    _tray.ShowBalloonTip(10000, "Hawwel", $"إصدار جديد ({v}) متاح. افتح Hawwel واضغط تحديث.", Forms.ToolTipIcon.Info);
+            }
+            return UpdateCheckResult.Available;
+        }
+        catch
+        {
+            return UpdateCheckResult.Failed; // مفيش نت أو GitHub مش متاح: ما نزعجش المستخدم
+        }
     }
 
     // ---- الاختصار ----
@@ -112,6 +158,7 @@ public partial class App : Application
             ContextMenuStrip = menu,
             Visible = Settings.ShowTray
         };
+        _tray.BalloonTipClicked += (_, _) => ShowWindow();
         _tray.MouseClick += (_, ev) => { if (ev.Button == Forms.MouseButtons.Left) ShowWindow(); };
     }
 

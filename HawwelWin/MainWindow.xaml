@@ -12,6 +12,17 @@
         <TextBlock Text="حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار"
                    Foreground="{StaticResource Muted}" Margin="0,2,0,18" TextWrapping="Wrap"/>
 
+        <Border x:Name="UpdateCard" Style="{StaticResource CardBox}" Margin="0,0,0,12"
+                Background="#EEF2FF" BorderBrush="#C7D2FE" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock x:Name="UpdateTitle" FontWeight="SemiBold" Foreground="{StaticResource Ink}" TextWrapping="Wrap"/>
+                <TextBlock x:Name="UpdateMsg" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,4,0,8" TextWrapping="Wrap"/>
+                <ProgressBar x:Name="UpdateProgress" Height="6" Minimum="0" Maximum="100" Margin="0,0,0,8" Visibility="Collapsed"/>
+                <Button x:Name="UpdateBtn" Content="حدّث دلوقتي" Style="{StaticResource PillButton}"
+                        HorizontalAlignment="Left" Click="Update_Click"/>
+            </StackPanel>
+        </Border>
+
         <Border Style="{StaticResource CardBox}" Margin="0,0,0,12">
             <StackPanel>
                 <TextBlock Text="الاختصار" Style="{StaticResource CardTitle}"/>
@@ -45,7 +56,13 @@
             </StackPanel>
         </Border>
 
-        <Button Content="خروج من Hawwel" Style="{StaticResource PillButton}" HorizontalAlignment="Left"
-                Margin="0,14,0,0" Click="Quit_Click"/>
+        <DockPanel Margin="0,14,0,0" LastChildFill="False">
+            <Button Content="خروج من Hawwel" DockPanel.Dock="Left" Style="{StaticResource PillButton}" Click="Quit_Click"/>
+            <Button x:Name="CheckBtn" Content="دوّر على تحديث" DockPanel.Dock="Left" Margin="8,0,8,0"
+                    Style="{StaticResource PillButton}" Click="Check_Click"/>
+            <TextBlock x:Name="VersionText" DockPanel.Dock="Right" VerticalAlignment="Center"
+                       Foreground="{StaticResource Muted}" FontSize="12" FlowDirection="LeftToRight"/>
+        </DockPanel>
+        <TextBlock x:Name="CheckMsg" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,8,0,0" TextWrapping="Wrap"/>
     </StackPanel>
 </Window>

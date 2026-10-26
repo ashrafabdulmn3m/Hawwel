@@ -13,7 +13,10 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = App.Current.Engine;
         RefreshControls();
+        App.Current.UpdateChanged += RefreshUpdateUi;
     }
+
+    private bool _updating;
 
     public void RefreshControls()
     {
@@ -21,6 +24,61 @@ public partial class MainWindow : Window
         HotkeyText.Text = HotkeyService.Describe(s.HotkeyModifiers, s.HotkeyVk);
         LaunchCheck.IsChecked = Settings.LaunchAtLogin;
         TrayCheck.IsChecked = s.ShowTray;
+        VersionText.Text = "v" + Updater.Current;
+        RefreshUpdateUi();
+    }
+
+    // ---- التحديثات ----
+
+    private void RefreshUpdateUi()
+    {
+        if (_updating) return; // ما نغيّرش الرسالة وإحنا بننزّل
+        var u = App.Current.PendingUpdate;
+        if (u == null) { UpdateCard.Visibility = Visibility.Collapsed; return; }
+        UpdateTitle.Text = $"إصدار جديد متاح: {u.Version} (إنت على {Updater.Current})";
+        UpdateMsg.Text = "هيتنزّل ويتثبّت فوق القديم، ومش محتاج تمسح حاجة. Hawwel هيتقفل ويفتح تاني لوحده.";
+        UpdateCard.Visibility = Visibility.Visible;
+    }
+
+    private async void Update_Click(object sender, RoutedEventArgs e)
+    {
+        var info = App.Current.PendingUpdate;
+        if (info == null) return;
+
+        _updating = true;
+        UpdateBtn.IsEnabled = false;
+        UpdateProgress.Value = 0;
+        UpdateProgress.Visibility = Visibility.Visible;
+        UpdateMsg.Text = "بنزّل التحديث...";
+        try
+        {
+            var progress = new Progress<double>(p => UpdateProgress.Value = p * 100);
+            var path = await Updater.DownloadAsync(info, progress);
+            UpdateMsg.Text = "بنثبّت التحديث... Hawwel هيتقفل ويفتح تاني.";
+            Updater.LaunchInstaller(path);
+            App.Current.Quit();
+        }
+        catch (Exception ex)
+        {
+            _updating = false;
+            UpdateProgress.Visibility = Visibility.Collapsed;
+            UpdateBtn.IsEnabled = true;
+            UpdateMsg.Text = "⚠️ فشل التحديث: " + ex.Message;
+        }
+    }
+
+    private async void Check_Click(object sender, RoutedEventArgs e)
+    {
+        CheckBtn.IsEnabled = false;
+        CheckMsg.Text = "بدوّر...";
+        var r = await App.Current.CheckForUpdateAsync(userInitiated: true);
+        CheckMsg.Text = r switch
+        {
+            UpdateCheckResult.Available => "فيه إصدار جديد، شوف الكارت اللي فوق.",
+            UpdateCheckResult.UpToDate => "إنت على آخر إصدار ✅",
+            _ => "⚠️ معرفتش أوصل لـ GitHub، اتأكد من النت وجرّب تاني."
+        };
+        CheckBtn.IsEnabled = true;
     }
 
     // ---- تسجيل اختصار جديد ----
