@@ -6,22 +6,23 @@
     <description>Hawwel macOS updates</description>
     <language>en</language>
 
-    <!-- ضيف كل إصدار جديد كـ <item> هنا (الأحدث فوق). مثال:
-
     <item>
       <title>Version 1.2.0</title>
-      <pubDate>Mon, 26 Oct 2026 15:00:00 +0300</pubDate>
+      <pubDate>Wed, 28 Oct 2026 01:25:00 +0300</pubDate>
       <sparkle:version>3</sparkle:version>
       <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
-      <description><![CDATA[<ul><li>Auto-update support</li></ul>]]></description>
+      <description><![CDATA[
+        <ul>
+          <li>Automatic updates: Hawwel can now check for new versions and update itself.</li>
+        </ul>
+      ]]></description>
       <enclosure
-        url="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/v1.2.0/Hawwel-1.2.dmg"
-        sparkle:edSignature="الصق_التوقيع_من_sign_update"
-        length="حجم_الملف_بالبايت"
+        url="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.2.0/Hawwel-1.2.0.dmg"
+        sparkle:edSignature="jCsFoZKXhiOz0OrEH0CdiUh0+NGAZn/CRpmm9TkoSh1ZwGuNHMCOEzdzHBj32LoVo6YvV4iEUZVfsU0zI2+UAQ=="
+        length="1760456"
         type="application/octet-stream"/>
     </item>
 
-    -->
   </channel>
 </rss>
