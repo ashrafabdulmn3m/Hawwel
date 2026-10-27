@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.0.3/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/v1.1.0/Hawwel-1.1.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
+  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.2.0/Hawwel-1.2.0.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
 </p>
 
 ---
@@ -28,14 +28,13 @@ Hawwel is a small app for **macOS and Windows** that converts text typed with th
 - Detects the direction automatically.
 - Choose your own shortcut (default: `⌃K` on Mac, `Ctrl + Alt + K` on Windows).
 - Optional menu bar / system tray icon and launch at login.
-- Runs fully offline. No data collected, nothing sent anywhere.
-
+- Works offline. No data is collected. The only network use is the optional update check.
 ## Download
 
 | Platform | Download | Requirements |
 |---|---|---|
 | **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.0.3/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
-| **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/v1.1.0/Hawwel-1.1.dmg) (`Hawwel-1.1.dmg`) | macOS 14 or later |
+| **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.2.0/Hawwel-1.2.0.dmg) (`Hawwel-1.2.0.dmg`) | macOS 14 or later |
 
 Older versions and release notes are on the [Releases page](https://github.com/ashrafabdulmn3m/Hawwel/releases).
 
@@ -55,7 +54,7 @@ To remove it: **Settings → Apps → Installed apps → Hawwel → Uninstall**.
 
 ## Install on macOS
 
-1. Open `Hawwel-1.1.dmg` and drag **Hawwel** to **Applications**.
+1. Open `Hawwel-1.2.0.dmg` and drag **Hawwel** to **Applications**.
 2. Open it. macOS will warn that the app is from an unidentified developer, because this version isn't notarized by Apple yet.
 3. Go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway**.
 4. If you don't see the button, run this in Terminal and open the app again:
@@ -102,6 +101,7 @@ Built with C# and WPF. The installer is built by GitHub Actions (see `.github/wo
 - The Accessibility permission on macOS may need to be re-granted after updating the app.
 - On Windows, Hawwel doesn't work inside apps running **as Administrator**, or inside **Terminal / CMD / PowerShell** (Ctrl+C there stops the running program instead of copying).
 - Found a bug or a layout that doesn't work? [Open an issue](https://github.com/ashrafabdulmn3m/Hawwel/issues).
+- The only network connection is the optional update check, in both the Windows and macOS versions. Hawwel asks GitHub whether a newer release exists, and downloads it only when you press **Update**. This check is on by default and can be turned off with **"Check for updates automatically"** in the Hawwel window (you can still check manually). Nothing is sent except the normal information of an HTTPS request (such as your IP address).
 
 ## License
 
