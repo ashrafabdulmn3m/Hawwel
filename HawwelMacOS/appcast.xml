@@ -7,6 +7,24 @@
     <language>en</language>
 
     <item>
+      <title>Version 1.2.1</title>
+      <pubDate>Wed, 28 Oct 2026 02:11:00 +0300</pubDate>
+      <sparkle:version>4</sparkle:version>
+      <sparkle:shortVersionString>1.2.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+        <ul>
+          <li>Automatic updates: Hawwel can now check for new versions and update itself.</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.2.1/Hawwel-1.2.1.dmg"
+        sparkle:edSignature="aZVFmlxFBryPUY4OtjPb9diA463tvGkmdOMWiCr3/kx5hCplWtdCTVdoj1I7ivwvP+D1+gDKdKGuUZE/DcCVBg=="
+        length="1762476"
+        type="application/octet-stream"/>
+    </item>
+    
+    <item>
       <title>Version 1.2.0</title>
       <pubDate>Wed, 28 Oct 2026 01:25:00 +0300</pubDate>
       <sparkle:version>3</sparkle:version>
