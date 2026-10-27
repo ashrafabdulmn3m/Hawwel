@@ -6,8 +6,13 @@ struct ContentView: View {
     @AppStorage("showMenuBar") private var showMenuBar = true
     @Environment(\.dismissWindow) private var dismissWindow // last edit 22oct
     @EnvironmentObject var engine: Engine
+    @EnvironmentObject var updater: UpdaterManager
     @State private var testText = ""
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -51,6 +56,17 @@ struct ContentView: View {
                 set: { engine.setLaunchAtLogin($0) }
             ))
             Toggle("أظهر Hawwel في المنيو بار", isOn: $showMenuBar)
+            Toggle("دوّر على التحديثات تلقائياً", isOn: Binding(
+                get: { updater.automaticallyChecks },
+                set: { updater.setAutomaticChecks($0) }
+            ))
+
+            HStack {
+                Text("الإصدار \(appVersion)").font(.caption).foregroundStyle(.secondary)
+                Spacer()
+                Button("دوّر على تحديث") { updater.checkForUpdates() }
+                    .disabled(!updater.canCheckForUpdates)
+            }
         }
         .padding(24)
         .frame(width: 440)

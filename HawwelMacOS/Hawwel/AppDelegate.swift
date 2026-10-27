@@ -21,6 +21,14 @@ enum AppMode {
         }
     }
 
+    /// يخلّي نافذة التحديث تظهر قدّام حتى لو التطبيق مخفي في المنيو بار
+    static func prepareForUpdateUI() {
+        NSApp.setActivationPolicy(.regular)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+
     static func hideDock() {
         if menuBarEnabled { NSApp.setActivationPolicy(.accessory) }
     }

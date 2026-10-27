@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Hawwel</title>
+    <link>https://github.com/ashrafabdulmn3m/Hawwel</link>
+    <description>Hawwel macOS updates</description>
+    <language>en</language>
+
+    <!-- ضيف كل إصدار جديد كـ <item> هنا (الأحدث فوق). مثال:
+
+    <item>
+      <title>Version 1.2.0</title>
+      <pubDate>Mon, 26 Oct 2026 15:00:00 +0300</pubDate>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+      <description><![CDATA[<ul><li>Auto-update support</li></ul>]]></description>
+      <enclosure
+        url="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/v1.2.0/Hawwel-1.2.dmg"
+        sparkle:edSignature="الصق_التوقيع_من_sign_update"
+        length="حجم_الملف_بالبايت"
+        type="application/octet-stream"/>
+    </item>
+
+    -->
+  </channel>
+</rss>

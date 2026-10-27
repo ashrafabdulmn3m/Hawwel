@@ -8,15 +8,29 @@
 
 /* Begin PBXBuildFile section */
 		DC0E6DA83088F73D001B51D0 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = DC0E6DA73088F73D001B51D0 /* KeyboardShortcuts */; };
+		DCD0FBE3309152BB003CC97C /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = DCD0FBE2309152BB003CC97C /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* Hawwel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hawwel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DCD0FBE6309155D6003CC97C /* Exceptions for "Hawwel" folder in "Hawwel" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 000000000000000100000000 /* Hawwel */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		000000000000000000000010 /* Hawwel */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DCD0FBE6309155D6003CC97C /* Exceptions for "Hawwel" folder in "Hawwel" target */,
+			);
 			path = Hawwel;
 			sourceTree = "<group>";
 		};
@@ -27,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				DC0E6DA83088F73D001B51D0 /* KeyboardShortcuts in Frameworks */,
+				DCD0FBE3309152BB003CC97C /* Sparkle in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -36,6 +51,7 @@
 			isa = PBXGroup;
 			children = (
 				000000000000000000000010 /* Hawwel */,
+				DCD0FBE4309152E8003CC97C /* Frameworks */,
 				000000000000000000000020 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -46,6 +62,13 @@
 				000000000000000000000120 /* Hawwel.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		DCD0FBE4309152E8003CC97C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -67,6 +90,7 @@
 			name = Hawwel;
 			packageProductDependencies = (
 				DC0E6DA73088F73D001B51D0 /* KeyboardShortcuts */,
+				DCD0FBE2309152BB003CC97C /* Sparkle */,
 			);
 			productName = MyApp;
 			productReference = 000000000000000000000120 /* Hawwel.app */;
@@ -98,6 +122,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				DC0E6DA63088F73D001B51D0 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				DCD0FBE1309152BB003CC97C /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
@@ -271,6 +296,7 @@
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Hawwel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Hawwel - حوّل";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -313,6 +339,7 @@
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Hawwel/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Hawwel - حوّل";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -374,6 +401,14 @@
 				minimumVersion = 3.1.0;
 			};
 		};
+		DCD0FBE1309152BB003CC97C /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -381,6 +416,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DC0E6DA63088F73D001B51D0 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
 			productName = KeyboardShortcuts;
+		};
+		DCD0FBE2309152BB003CC97C /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCD0FBE1309152BB003CC97C /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

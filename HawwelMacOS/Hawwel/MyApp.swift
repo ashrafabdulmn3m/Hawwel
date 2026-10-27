@@ -4,12 +4,15 @@ import SwiftUI
 struct MyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var engine = Engine()
+    @StateObject private var updater = UpdaterManager()
     @AppStorage("showMenuBar") private var showMenuBar = true
     @Environment(\.openWindow) private var openWindow
 
     var body: some Scene {
         Window("Hawwel", id: "main") {
-            ContentView().environmentObject(engine)
+            ContentView()
+                .environmentObject(engine)
+                .environmentObject(updater)
         }
         .windowResizability(.contentSize)
 
@@ -19,6 +22,7 @@ struct MyApp: App {
                 openWindow(id: "main")
                 AppMode.showDock()
             }
+            Button("دوّر على تحديث…") { updater.checkForUpdates() }
             Divider()
             Button("خروج") { NSApplication.shared.terminate(nil) }
         } label: {
