@@ -57,13 +57,16 @@ final class Engine: ObservableObject {
             status = "⚠️ الكيبورد مش لاقيه (US أو Arabic-PC)"
             return
         }
+        // نقرأ حالة Caps Lock قبل ما نبعت أي ضغطات
+        let capsLock = CGEventSource.flagsState(.combinedSessionState).contains(.maskAlphaShift)
+
         let pb = NSPasteboard.general
         let saved = snapshot(pb)
 
         copySelection(pb) { [weak self] text in
             guard let self else { return }
             if let text {
-                self.replace(with: converter.convert(text), pb, saved)
+                self.replace(with: converter.convert(text, capsLock: capsLock), pb, saved)
                 return
             }
             // مفيش تحديد: حدد آخر كلمة (⌥⇧←)
@@ -75,7 +78,7 @@ final class Engine: ObservableObject {
                         self.restore(pb, saved)
                         return
                     }
-                    self.replace(with: converter.convert(text), pb, saved)
+                    self.replace(with: converter.convert(text, capsLock: capsLock), pb, saved)
                 }
             }
         }

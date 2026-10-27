@@ -35,11 +35,33 @@ final class LayoutConverter {
         }
     }
 
-    /// يحوّل النص تلقائياً حسب الاتجاه
-    func convert(_ text: String) -> String {
+    /// يحوّل النص تلقائياً حسب الاتجاه.
+    /// capsLock: حالة Caps Lock وقت التحويل، علشان الحروف الكبيرة بسببه ما تتحوّلش كأنها Shift.
+    func convert(_ text: String, capsLock: Bool = false) -> String {
         let latin = text.unicodeScalars.filter { $0.properties.isAlphabetic && $0.isASCII }.count
         let arabic = text.unicodeScalars.filter { (0x0600...0x06FF).contains($0.value) }.count
-        return map(text, latin > arabic ? enToAr : arToEn)
+        if latin > arabic { return map(fixCapsLock(text, capsLock: capsLock), enToAr) }
+        return map(text, arToEn)
+    }
+
+    /// لو Caps Lock شغّال: كل حرف لاتيني ظاهر بعكس الـ Shift الحقيقي، فنقلب حالته.
+    /// لو مقفول لكن كل الحروف كبيرة (والمستخدم قفله بعد الكتابة): نصغّرها.
+    private func fixCapsLock(_ text: String, capsLock: Bool) -> String {
+        if capsLock { return transformASCII(text, swap: true) }
+
+        let letters = text.filter { $0.isASCII && $0.isLetter }
+        let upper = letters.filter { $0.isUppercase }.count
+        let lower = letters.count - upper
+        return (upper >= 2 && lower == 0) ? transformASCII(text, swap: false) : text
+    }
+
+    // swap = true: يقلب حالة الحروف اللاتينية، swap = false: يصغّر الكبيرة بس (ASCII فقط)
+    private func transformASCII(_ text: String, swap: Bool) -> String {
+        String(text.map { c -> Character in
+            guard c.isASCII, c.isLetter else { return c }
+            if c.isUppercase { return Character(c.lowercased()) }
+            return swap ? Character(c.uppercased()) : c
+        })
     }
 
     private func map(_ text: String, _ table: [String: String]) -> String {
