@@ -3,49 +3,236 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
-        <SolidColorBrush x:Key="Bg" Color="#F5F6F8"/>
-        <SolidColorBrush x:Key="Card" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="CardBorder" Color="#E3E6EB"/>
-        <SolidColorBrush x:Key="Accent" Color="#2F6FED"/>
-        <SolidColorBrush x:Key="Muted" Color="#6B7280"/>
-        <SolidColorBrush x:Key="Ink" Color="#111827"/>
 
-        <Style x:Key="CardTitle" TargetType="TextBlock">
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        <!-- ===== الألوان (قيم النهاري، والـ Theme.cs بيستبدلها حسب الوضع) ===== -->
+        <SolidColorBrush x:Key="Accent" Color="#1E88E5"/>
+        <SolidColorBrush x:Key="AccentHover" Color="#1976D2"/>
+        <SolidColorBrush x:Key="AccentSoft" Color="#E3F1FD"/>
+        <SolidColorBrush x:Key="AccentSoftHover" Color="#D1E7FB"/>
+        <SolidColorBrush x:Key="Ink" Color="#171C2E"/>
+        <SolidColorBrush x:Key="Muted" Color="#5F6B85"/>
+        <SolidColorBrush x:Key="Bg" Color="#F3F5FA"/>
+        <SolidColorBrush x:Key="Card" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="CardBorder" Color="#E8ECF4"/>
+        <SolidColorBrush x:Key="Divider" Color="#ECEFF5"/>
+        <SolidColorBrush x:Key="Field" Color="#FAFBFE"/>
+        <SolidColorBrush x:Key="FieldBorder" Color="#C9D1E3"/>
+        <SolidColorBrush x:Key="Placeholder" Color="#8B94AB"/>
+        <SolidColorBrush x:Key="SwitchOff" Color="#C7CEDC"/>
+        <SolidColorBrush x:Key="AccentText" Color="#1E88E5"/>
+        <SolidColorBrush x:Key="OutlineBg" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="OutlineBorder" Color="#D5DBE8"/>
+        <SolidColorBrush x:Key="OutlineHover" Color="#F3F5FA"/>
+        <SolidColorBrush x:Key="ChipBg" Color="#F4F7FC"/>
+        <SolidColorBrush x:Key="ChipBorder" Color="#C9D3E6"/>
+        <SolidColorBrush x:Key="UpdateBg" Color="#E8F3FD"/>
+        <SolidColorBrush x:Key="UpdateBorder" Color="#BBDDFB"/>
+        <SolidColorBrush x:Key="ProgressTrack" Color="#CFE3F8"/>
+        <SolidColorBrush x:Key="SegBg" Color="#EAEFF8"/>
+
+        <!-- ===== الخطوط (IBM Plex Sans Arabic) ===== -->
+        <FontFamily x:Key="HwFont">pack://application:,,,/Fonts/#IBM Plex Sans Arabic</FontFamily>
+        <FontFamily x:Key="HwFontMedium">pack://application:,,,/Fonts/#IBM Plex Sans Arabic Medium</FontFamily>
+        <FontFamily x:Key="HwFontSemi">pack://application:,,,/Fonts/#IBM Plex Sans Arabic SemiBold</FontFamily>
+
+        <!-- ===== الكروت ===== -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Card}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
             <Setter Property="Margin" Value="0,0,0,8"/>
         </Style>
 
-        <Style x:Key="CardBox" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource Card}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource CardBorder}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="Padding" Value="14"/>
+        <Style x:Key="BodyText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource HwFont}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
 
-        <Style x:Key="PillButton" TargetType="Button">
-            <Setter Property="Padding" Value="14,7"/>
+        <Style x:Key="HintText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource HwFont}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <!-- ===== الأزرار ===== -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Background" Value="#EEF2FF"/>
-            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="18,8"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="8"
+                        <Border x:Name="bd" Background="{DynamicResource Accent}" CornerRadius="12"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="b" Property="Background" Value="#DDE6FF"/>
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="SoftButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{DynamicResource AccentText}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="18,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{DynamicResource AccentSoft}" CornerRadius="12"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentSoftHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="OutlineButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="18,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{DynamicResource OutlineBg}" BorderBrush="{DynamicResource OutlineBorder}" BorderThickness="1"
+                                CornerRadius="12" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource OutlineHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== Toggle (بديل الـ CheckBox) =====
+             الـ knob على الـ Left = "بداية" الاتجاه، فمع RTL بيظهر يمين لما مقفول وشمال لما شغّال -->
+        <Style x:Key="SwitchStyle" TargetType="ToggleButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="track" Width="46" Height="26" CornerRadius="13"
+                                Background="{DynamicResource SwitchOff}">
+                            <Ellipse x:Name="knob" Width="20" Height="20" Fill="White"
+                                     HorizontalAlignment="Left" Margin="3,0,3,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="track" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== خانة النص ===== -->
+        <Style x:Key="FieldTextBox" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="{StaticResource HwFont}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource Ink}"/>
+            <Setter Property="Background" Value="{DynamicResource Field}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource FieldBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="14">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" Focusable="False"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <!-- ===== أزرار اختيار المظهر (نهاري / ليلي / تلقائي) ===== -->
+        <Style x:Key="SegmentStyle" TargetType="RadioButton">
+            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="9" MinWidth="76" Height="34">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="IsChecked" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HwProgress" TargetType="ProgressBar">
+            <Setter Property="Height" Value="6"/>
+            <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+            <Setter Property="Background" Value="{DynamicResource ProgressTrack}"/>
+            <Setter Property="BorderThickness" Value="0"/>
         </Style>
     </Application.Resources>
 </Application>

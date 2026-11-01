@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Hawwel;
 
@@ -11,17 +13,77 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        LoadLogo();
+        SourceInitialized += (_, _) => Theme.ApplyTitleBar(this);
+        MaxHeight = SystemParameters.WorkArea.Height - 20; // الشاشات الصغيرة: النافذة تتمرّر بدل ما تتقص
         DataContext = App.Current.Engine;
         RefreshControls();
+        ApplyStatus();
         App.Current.UpdateChanged += RefreshUpdateUi;
+        App.Current.Engine.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(Engine.Status)) ApplyStatus();
+        };
     }
+
+    // ---- شكل "جاهز ●" حسب حالة الـ Engine ----
+
+    private void ApplyStatus()
+    {
+        var raw = App.Current.Engine.Status ?? "";
+        bool warn = raw.StartsWith("\u26A0");
+        bool ok = raw.StartsWith("\u2705") || raw.StartsWith("جاهز");
+        StatusText.Text = raw.TrimStart('\u26A0', '\u2705', '\uFE0F', ' ');
+        StatusPill.ToolTip = StatusText.Text;
+
+        // SetResourceReference: الألوان بتتبدّل لوحدها لما الوضع (نهاري/ليلي) يتغيّر
+        var k = warn ? "PillWarn" : ok ? "PillOk" : "PillIdle";
+        StatusPill.SetResourceReference(Border.BackgroundProperty, k + "Bg");
+        StatusDot.SetResourceReference(System.Windows.Shapes.Shape.FillProperty, k + "Dot");
+        StatusText.SetResourceReference(TextBlock.ForegroundProperty, k + "Text");
+    }
+
+    // اللوجو: logo.png، ولو مش موجود في الـ Resources نرجع لأيقونة التطبيق بدل ما يبان فاضي
+    private void LoadLogo()
+    {
+        foreach (var name in new[] { "logo.png", "hawwel.ico" })
+        {
+            try
+            {
+                var bmp = new System.Windows.Media.Imaging.BitmapImage();
+                bmp.BeginInit();
+                bmp.UriSource = new Uri($"pack://application:,,,/Assets/{name}");
+                bmp.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bmp.EndInit();
+                LogoImage.Source = bmp;
+                return;
+            }
+            catch { }
+        }
+    }
+
+    private void Theme_Click(object sender, RoutedEventArgs e) =>
+        Theme.Set((string)((RadioButton)sender).Tag);
+
+    private void TestBox_TextChanged(object sender, TextChangedEventArgs e) =>
+        TestPlaceholder.Visibility = string.IsNullOrEmpty(TestBox.Text) ? Visibility.Visible : Visibility.Collapsed;
 
     private bool _updating;
 
     public void RefreshControls()
     {
         var s = App.Current.Settings;
-        HotkeyText.Text = HotkeyService.Describe(s.HotkeyModifiers, s.HotkeyVk);
+        // "Ctrl + Alt + K" -> ["Ctrl", "+", "Alt", "+", "K"] علشان كل جزء يظهر ككابسة
+        var keys = new List<string>();
+        foreach (var part in HotkeyService.Describe(s.HotkeyModifiers, s.HotkeyVk).Split(" + "))
+        {
+            if (keys.Count > 0) keys.Add("+");
+            keys.Add(part);
+        }
+        HotkeyKeys.ItemsSource = keys;
+        ThemeLight.IsChecked = Theme.Mode == Theme.Light;
+        ThemeDark.IsChecked = Theme.Mode == Theme.Dark;
+        ThemeAuto.IsChecked = Theme.Mode == Theme.Auto;
         LaunchCheck.IsChecked = Settings.LaunchAtLogin;
         TrayCheck.IsChecked = s.ShowTray;
         AutoUpdateCheck.IsChecked = s.AutoCheckUpdates;
@@ -87,8 +149,8 @@ public partial class MainWindow : Window
     private void Record_Click(object sender, RoutedEventArgs e)
     {
         _recording = true;
-        HotkeyMsg.Visibility = Visibility.Collapsed;
-        RecordBtn.Content = "اضغط الاختصار الجديد… (Esc للإلغاء)";
+        RecordBtn.Content = "اضغط الاختصار…";
+        ShowHotkeyMessage("اضغط الاختصار الجديد على الكيبورد، أو Esc للإلغاء.", warning: false);
         App.Current.PauseHotkey(); // علشان الاختصار الحالي ما يشتغلش وإحنا بنسجّل
         Focus();
     }
@@ -97,6 +159,7 @@ public partial class MainWindow : Window
     {
         _recording = false;
         RecordBtn.Content = "غيّر الاختصار";
+        HotkeyMsg.Visibility = Visibility.Collapsed;
     }
 
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -125,7 +188,7 @@ public partial class MainWindow : Window
 
         if (mods == 0)
         {
-            ShowHotkeyMessage("لازم تستخدم Ctrl أو Alt أو Shift مع المفتاح.");
+            ShowHotkeyMessage("لازم تستخدم Ctrl أو Alt أو Shift مع المفتاح، أو Esc للإلغاء.");
             return;
         }
 
@@ -136,9 +199,10 @@ public partial class MainWindow : Window
         RefreshControls();
     }
 
-    private void ShowHotkeyMessage(string msg)
+    private void ShowHotkeyMessage(string msg, bool warning = true)
     {
         HotkeyMsg.Text = msg;
+        HotkeyMsg.SetResourceReference(TextBlock.ForegroundProperty, warning ? "Warn" : "Muted");
         HotkeyMsg.Visibility = Visibility.Visible;
     }
 

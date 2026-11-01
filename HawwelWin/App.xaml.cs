@@ -47,6 +47,7 @@ public partial class App : Application
         }) { IsBackground = true }.Start();
 
         Settings = Settings.Load();
+        Theme.Init(Settings); // لازم قبل ما النافذة تتعمل
         Engine = new Engine();
 
         _hotkey = new HotkeyService();

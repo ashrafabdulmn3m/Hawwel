@@ -25,6 +25,9 @@
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
     <Resource Include="Assets\hawwel.ico" />
+    <Resource Include="Assets\*.png" />
+    <Resource Include="Fonts\*.ttf" />
+    <None Include="Fonts\OFL-LICENSE.txt" />
   </ItemGroup>
 
 </Project>

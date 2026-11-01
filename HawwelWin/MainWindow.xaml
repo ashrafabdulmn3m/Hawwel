@@ -3,67 +3,204 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Hawwel - حوّل" Width="480" SizeToContent="Height"
         ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
-        FlowDirection="RightToLeft" FontFamily="Segoe UI" FontSize="14"
-        Background="{StaticResource Bg}" PreviewKeyDown="Window_PreviewKeyDown"
+        FlowDirection="RightToLeft" FontFamily="{StaticResource HwFont}" FontSize="16"
+        Background="{DynamicResource Bg}" UseLayoutRounding="True"
+        PreviewKeyDown="Window_PreviewKeyDown"
         Icon="pack://application:,,,/Assets/hawwel.ico">
-    <StackPanel Margin="24">
 
-        <TextBlock Text="Hawwel" FontSize="30" FontWeight="Bold" Foreground="{StaticResource Ink}"/>
-        <TextBlock Text="حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار"
-                   Foreground="{StaticResource Muted}" Margin="0,2,0,18" TextWrapping="Wrap"/>
+    <Window.Resources>
+        <!-- مفتاح الاختصار: كل عنصر إما "كابسة" أو علامة + -->
+        <DataTemplate x:Key="KeyChipTemplate">
+            <Grid>
+                <Border x:Name="chip" MinWidth="42" Height="34" Padding="12,0" CornerRadius="10"
+                        Background="{DynamicResource ChipBg}" BorderBrush="{DynamicResource ChipBorder}" BorderThickness="1,1,1,3">
+                    <TextBlock Text="{Binding}" FontFamily="{StaticResource HwFontSemi}" FontSize="16"
+                               Foreground="{DynamicResource Ink}" VerticalAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                </Border>
+                <TextBlock x:Name="plus" Text="+" Visibility="Collapsed" FontSize="18"
+                           Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="8,0"/>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="+">
+                    <Setter TargetName="chip" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="plus" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Window.Resources>
 
-        <Border x:Name="UpdateCard" Style="{StaticResource CardBox}" Margin="0,0,0,12"
-                Background="#EEF2FF" BorderBrush="#C7D2FE" Visibility="Collapsed">
-            <StackPanel>
-                <TextBlock x:Name="UpdateTitle" FontWeight="SemiBold" Foreground="{StaticResource Ink}" TextWrapping="Wrap"/>
-                <TextBlock x:Name="UpdateMsg" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,4,0,8" TextWrapping="Wrap"/>
-                <ProgressBar x:Name="UpdateProgress" Height="6" Minimum="0" Maximum="100" Margin="0,0,0,8" Visibility="Collapsed"/>
-                <Button x:Name="UpdateBtn" Content="حدّث دلوقتي" Style="{StaticResource PillButton}"
-                        HorizontalAlignment="Left" Click="Update_Click"/>
-            </StackPanel>
-        </Border>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="22,16,22,18">
 
-        <Border Style="{StaticResource CardBox}" Margin="0,0,0,12">
-            <StackPanel>
-                <TextBlock Text="الاختصار" Style="{StaticResource CardTitle}"/>
-                <DockPanel LastChildFill="False">
-                    <TextBlock x:Name="HotkeyText" DockPanel.Dock="Left" FontSize="16" FontWeight="SemiBold"
-                               VerticalAlignment="Center" FlowDirection="LeftToRight"/>
-                    <Button x:Name="RecordBtn" DockPanel.Dock="Right" Content="غيّر الاختصار"
-                            Style="{StaticResource PillButton}" Click="Record_Click"/>
-                </DockPanel>
-                <TextBlock x:Name="HotkeyMsg" Foreground="#B45309" FontSize="12" Margin="0,8,0,0"
-                           TextWrapping="Wrap" Visibility="Collapsed"/>
-            </StackPanel>
-        </Border>
+            <!-- الرأس -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Width="48" Height="48" CornerRadius="14" Background="White">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.12" Color="#1E3A8A"/>
+                    </Border.Effect>
+                    <Image x:Name="LogoImage" Margin="4" RenderOptions.BitmapScalingMode="HighQuality"/>
+                </Border>
+                <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Hawwel - حوّل" FontFamily="{StaticResource HwFont}" FontWeight="Bold"
+                               FontSize="24" Foreground="{DynamicResource Ink}"/>
+                    <TextBlock Text="حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار"
+                               Style="{StaticResource HintText}" FontSize="14" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Grid>
 
-        <Border Style="{StaticResource CardBox}" Margin="0,0,0,12">
-            <StackPanel>
-                <TextBlock Text="جرّب هنا" Style="{StaticResource CardTitle}"/>
-                <TextBox x:Name="TestBox" Padding="8,6" AcceptsReturn="False"
-                         ToolTip="اكتب بالكيبورد الغلط، حدده، واضغط الاختصار"/>
-                <TextBlock Text="اكتب بالكيبورد الغلط، حدده، واضغط الاختصار"
-                           FontSize="12" Foreground="{StaticResource Muted}" Margin="0,6,0,0"/>
-                <TextBlock Text="{Binding Status}" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,2,0,0"
-                           TextWrapping="Wrap"/>
-            </StackPanel>
-        </Border>
+            <!-- كارت التحديث (بيظهر بس لو فيه إصدار جديد) -->
+            <Border x:Name="UpdateCard" Style="{StaticResource CardStyle}"
+                    Background="{DynamicResource UpdateBg}" BorderBrush="{DynamicResource UpdateBorder}" Visibility="Collapsed">
+                <StackPanel>
+                    <TextBlock x:Name="UpdateTitle" FontFamily="{StaticResource HwFontSemi}" FontSize="16"
+                               Foreground="{DynamicResource Ink}" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="UpdateMsg" Style="{StaticResource HintText}" Margin="0,4,0,12"/>
+                    <ProgressBar x:Name="UpdateProgress" Style="{StaticResource HwProgress}"
+                                 Minimum="0" Maximum="100" Margin="0,0,0,12" Visibility="Collapsed"/>
+                    <Button x:Name="UpdateBtn" Content="حدّث دلوقتي" Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left" Click="Update_Click"/>
+                </StackPanel>
+            </Border>
 
-        <Border Style="{StaticResource CardBox}">
-            <StackPanel>
-                <CheckBox x:Name="LaunchCheck" Content="شغّل Hawwel مع بداية الجهاز" Click="Launch_Click" Margin="0,0,0,8"/>
-                <CheckBox x:Name="TrayCheck" Content="أظهر Hawwel في الـ System Tray" Click="Tray_Click" Margin="0,0,0,8"/>
-                <CheckBox x:Name="AutoUpdateCheck" Content="دوّر على التحديثات تلقائياً (بيتصل بـ GitHub بس)" Click="AutoUpdate_Click"/>
-            </StackPanel>
-        </Border>
+            <!-- الاختصار -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="الاختصار" Style="{StaticResource SectionLabel}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ItemsControl x:Name="HotkeyKeys" Grid.Column="0" FlowDirection="LeftToRight"
+                                      VerticalAlignment="Center" ItemTemplate="{StaticResource KeyChipTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <Button x:Name="RecordBtn" Grid.Column="2" Content="غيّر الاختصار"
+                                Style="{StaticResource SoftButton}" Click="Record_Click"/>
+                    </Grid>
+                    <TextBlock x:Name="HotkeyMsg" Style="{StaticResource HintText}" Margin="0,12,0,0"
+                               Visibility="Collapsed"/>
+                </StackPanel>
+            </Border>
 
-        <DockPanel Margin="0,14,0,0" LastChildFill="False">
-            <Button Content="خروج من Hawwel" DockPanel.Dock="Left" Style="{StaticResource PillButton}" Click="Quit_Click"/>
-            <Button x:Name="CheckBtn" Content="دوّر على تحديث" DockPanel.Dock="Left" Margin="8,0,8,0"
-                    Style="{StaticResource PillButton}" Click="Check_Click"/>
-            <TextBlock x:Name="VersionText" DockPanel.Dock="Right" VerticalAlignment="Center"
-                       Foreground="{StaticResource Muted}" FontSize="12" FlowDirection="LeftToRight"/>
-        </DockPanel>
-        <TextBlock x:Name="CheckMsg" FontSize="12" Foreground="{StaticResource Muted}" Margin="0,8,0,0" TextWrapping="Wrap"/>
-    </StackPanel>
+            <!-- جرّب هنا -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="جرّب هنا" Style="{StaticResource SectionLabel}"/>
+                    <Grid>
+                        <TextBox x:Name="TestBox" Style="{StaticResource FieldTextBox}" Height="72"
+                                 AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"
+                                 VerticalScrollBarVisibility="Auto" TextChanged="TestBox_TextChanged"/>
+                        <TextBlock x:Name="TestPlaceholder" Text="مثال: اكتب بالكيبورد الغلط hghgl"
+                                   IsHitTestVisible="False" Foreground="{DynamicResource Placeholder}"
+                                   FontSize="16" Margin="15,13,15,0" VerticalAlignment="Top"/>
+                    </Grid>
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="اكتب بالكيبورد الغلط، حدده، واضغط الاختصار"
+                                   Style="{StaticResource HintText}" FontSize="14" VerticalAlignment="Center"
+                                   Margin="0,0,12,0"/>
+                        <Border x:Name="StatusPill" Grid.Column="1" CornerRadius="16" Padding="14,6"
+                                Background="#E2F3E7" VerticalAlignment="Center" MaxWidth="230">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="#2EA44F"
+                                         VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock x:Name="StatusText" Text="جاهز" FontFamily="{StaticResource HwFontSemi}"
+                                           FontSize="14" Foreground="#1B7F3B" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- الإعدادات -->
+            <Border Style="{StaticResource CardStyle}" Padding="16,2" Margin="0,0,0,14">
+                <StackPanel>
+                    <Grid MinHeight="52">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="المظهر" Style="{StaticResource BodyText}" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Background="{DynamicResource SegBg}" CornerRadius="12" Padding="4"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="ThemeLight" Content="نهاري" Tag="light" GroupName="Theme"
+                                             Style="{StaticResource SegmentStyle}" Click="Theme_Click"/>
+                                <RadioButton x:Name="ThemeDark" Content="ليلي" Tag="dark" GroupName="Theme"
+                                             Style="{StaticResource SegmentStyle}" Click="Theme_Click"/>
+                                <RadioButton x:Name="ThemeAuto" Content="تلقائي" Tag="auto" GroupName="Theme"
+                                             Style="{StaticResource SegmentStyle}" Click="Theme_Click"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <Border Height="1" Background="{DynamicResource Divider}"/>
+                    <Grid MinHeight="48">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="شغّل Hawwel مع بداية الجهاز" Style="{StaticResource BodyText}"
+                                   VerticalAlignment="Center"/>
+                        <ToggleButton x:Name="LaunchCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}"
+                                      Click="Launch_Click"/>
+                    </Grid>
+                    <Border Height="1" Background="{DynamicResource Divider}"/>
+                    <Grid MinHeight="48">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="أظهر Hawwel في الـ System Tray" Style="{StaticResource BodyText}"
+                                   VerticalAlignment="Center"/>
+                        <ToggleButton x:Name="TrayCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}"
+                                      Click="Tray_Click"/>
+                    </Grid>
+                    <Border Height="1" Background="{DynamicResource Divider}"/>
+                    <Grid MinHeight="48">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,6">
+                            <TextBlock Text="دوّر على التحديثات تلقائياً" Style="{StaticResource BodyText}"/>
+                            <TextBlock Text="بيتصل بـ GitHub بس" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <ToggleButton x:Name="AutoUpdateCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}"
+                                      Click="AutoUpdate_Click"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- الأزرار السفلية -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="VersionText" Grid.Column="0" VerticalAlignment="Center"
+                           Style="{StaticResource HintText}" FontSize="16" FlowDirection="LeftToRight"/>
+                <Button Grid.Column="2" Content="خروج من Hawwel" Style="{StaticResource OutlineButton}"
+                        Margin="0,0,12,0" Click="Quit_Click"/>
+                <Button x:Name="CheckBtn" Grid.Column="3" Content="دوّر على تحديث"
+                        Style="{StaticResource PrimaryButton}" Click="Check_Click"/>
+            </Grid>
+            <TextBlock x:Name="CheckMsg" Style="{StaticResource HintText}" Margin="0,6,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
 </Window>
