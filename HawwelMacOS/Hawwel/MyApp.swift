@@ -8,6 +8,8 @@ struct MyApp: App {
     @AppStorage("showMenuBar") private var showMenuBar = true
     @Environment(\.openWindow) private var openWindow
 
+    init() { HW.registerFonts() }
+
     var body: some Scene {
         Window("Hawwel", id: "main") {
             ContentView()
