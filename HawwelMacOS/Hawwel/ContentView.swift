@@ -4,7 +4,8 @@ import Combine
 
 struct ContentView: View {
     @AppStorage("showMenuBar") private var showMenuBar = true
-    @AppStorage("appearance") private var appearance = "auto" // light | dark | auto
+    // light | dark — أول مرة بياخد وضع الماك الحالي
+    @AppStorage("appearance") private var appearance = HW.systemAppearance
     @Environment(\.dismissWindow) private var dismissWindow // last edit 22oct
     @EnvironmentObject var engine: Engine
     @EnvironmentObject var updater: UpdaterManager
@@ -16,13 +17,7 @@ struct ContentView: View {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     }
 
-    private var colorScheme: ColorScheme? {
-        switch appearance {
-        case "light": return .light
-        case "dark": return .dark
-        default: return nil
-        }
-    }
+    private var colorScheme: ColorScheme { appearance == "dark" ? .dark : .light }
 
     // أجزاء الاختصار كـ "كابسات": ⌃ + ⌥ + K
     private var chips: [String] {
@@ -75,6 +70,8 @@ struct ContentView: View {
         .preferredColorScheme(colorScheme)
         .onReceive(tick) { _ in engine.trusted = AXIsProcessTrusted() }
         .onAppear {
+            // الإصدارات القديمة كان فيها "تلقائي": نحوّله للوضع الحالي بتاع الماك
+            if appearance != "light" && appearance != "dark" { appearance = HW.systemAppearance }
             if !AppMode.launchHandled {
                 AppMode.launchHandled = true
                 let firstRun = !UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
@@ -109,6 +106,7 @@ struct ContentView: View {
                     .foregroundStyle(HW.muted)
             }
             Spacer(minLength: 0)
+            HWAppearanceButton(selection: $appearance)
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 4)
@@ -219,19 +217,6 @@ struct ContentView: View {
 
     private var settingsCard: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text("المظهر").font(HW.font(15)).foregroundStyle(HW.ink)
-                Spacer()
-                HWSegmented(selection: $appearance, options: [
-                    HWOption(id: "light", title: "نهاري"),
-                    HWOption(id: "dark", title: "ليلي"),
-                    HWOption(id: "auto", title: "تلقائي")
-                ])
-            }
-            .frame(minHeight: 50)
-
-            Rectangle().fill(HW.divider).frame(height: 1)
-
             Toggle(isOn: Binding(
                 get: { engine.launchAtLogin },
                 set: { engine.setLaunchAtLogin($0) }

@@ -28,7 +28,6 @@ enum HW {
     static let outlineBorder = dyn(0xD5DBE8, 0x323B5A)
     static let chipBg       = dyn(0xF4F7FC, 0x232B45)
     static let chipBorder   = dyn(0xC9D3E6, 0x313A58)
-    static let segBg        = dyn(0xEAEFF8, 0x0F1422)
     static let warnBg       = dyn(0xE8F3FD, 0x16294A)
 
     static let pillOkBg     = dyn(0xE2F3E7, 0x14382A)
@@ -40,6 +39,11 @@ enum HW {
     static let pillIdleBg   = dyn(0xEAEFF8, 0x232B45)
     static let pillIdleDot  = dyn(0x8A94AB, 0x8A94AB)
     static let pillIdleText = dyn(0x3B4660, 0xB8C1D9)
+
+    /// وضع الماك الحالي ("dark" أو "light")
+    static var systemAppearance: String {
+        UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark" ? "dark" : "light"
+    }
 
     // MARK: - خطوط IBM Plex Sans Arabic
     enum Weight { case regular, semi, bold }
@@ -123,30 +127,33 @@ struct HWButtonStyle: ButtonStyle {
     }
 }
 
-/// اختيار المظهر: نهاري / ليلي / تلقائي.
-struct HWOption: Identifiable {
-    let id: String
-    let title: String
-}
+/// زرار المظهر: دايرة فيها أيقونة الوضع الحالي، وكل ضغطة بتبدّل بين النهاري والليلي.
+struct HWAppearanceButton: View {
+    @Binding var selection: String // light | dark
+    @State private var hovering = false
 
-struct HWSegmented: View {
-    @Binding var selection: String
-    let options: [HWOption]
+    private var isDark: Bool { selection == "dark" }
+    private var icon: String { isDark ? "moon.fill" : "sun.max.fill" }
+    private var title: String { isDark ? "الوضع الليلي" : "الوضع النهاري" }
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(options) { option in
-                Text(option.title)
-                    .font(HW.font(14, .semi))
-                    .foregroundStyle(selection == option.id ? Color.white : HW.muted)
-                    .frame(minWidth: 78, minHeight: 32)
-                    .background(selection == option.id ? HW.accent : Color.clear,
-                                in: RoundedRectangle(cornerRadius: 9))
-                    .contentShape(Rectangle())
-                    .onTapGesture { selection = option.id }
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                selection = isDark ? "light" : "dark"
             }
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(HW.accentText)
+                .contentTransition(.symbolEffect(.replace))
+                .frame(width: 40, height: 40)
+                .background(hovering ? HW.accentSoft : HW.card, in: Circle())
+                .overlay(Circle().stroke(HW.cardBorder, lineWidth: 1))
+                .contentShape(Circle())
         }
-        .padding(4)
-        .background(HW.segBg, in: RoundedRectangle(cornerRadius: 12))
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .help(title)
+        .accessibilityLabel(title)
     }
 }

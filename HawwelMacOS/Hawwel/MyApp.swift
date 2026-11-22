@@ -28,7 +28,8 @@ struct MyApp: App {
             Divider()
             Button("خروج") { NSApplication.shared.terminate(nil) }
         } label: {
-            Image(systemName: "character.bubble")
+            // لوجو Hawwel المختصر (ح + P) كـ template: الماك بيلوّنه أبيض أو أسود حسب المنيو بار
+            Image("MenuBarIcon")
                 .onAppear {
                     AppMode.openMain = {
                         openWindow(id: "main")

@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.0/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.0/Hawwel-1.3.0.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
+  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.1/Hawwel-1.3.1.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
 </p>
 
 ---
@@ -34,7 +34,7 @@ Hawwel is a small app for **macOS and Windows** that converts text typed with th
 | Platform | Download | Requirements |
 |---|---|---|
 | **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.0/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
-| **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.0/Hawwel-1.3.0.dmg) (`Hawwel-1.3.0.dmg`) | macOS 14 or later |
+| **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.1/Hawwel-1.3.1.dmg) (`Hawwel-1.3.1.dmg`) | macOS 14 or later |
 
 Older versions and release notes are on the [Releases page](https://github.com/ashrafabdulmn3m/Hawwel/releases).
 
@@ -54,8 +54,8 @@ To remove it: **Settings → Apps → Installed apps → Hawwel → Uninstall**.
 
 ## Install on macOS
 
-1. Download [`Hawwel-1.3.0.dmg`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.0/Hawwel-1.3.0.dmg).
-2. Open `Hawwel-1.3.0.dmg` and drag **Hawwel** to **Applications**.
+1. Download [`Hawwel-1.3.1.dmg`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.1/Hawwel-1.3.1.dmg).
+2. Open `Hawwel-1.3.1.dmg` and drag **Hawwel** to **Applications**.
 3. Open it. macOS will warn that the app is from an unidentified developer, because this version isn't notarized by Apple yet.
 4. Go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway**.
 5. If you don't see the button, run this in Terminal and open the app again:
