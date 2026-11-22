@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.0/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
+  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.1/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.1/Hawwel-1.3.1.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
 </p>
@@ -33,7 +33,7 @@ Hawwel is a small app for **macOS and Windows** that converts text typed with th
 
 | Platform | Download | Requirements |
 |---|---|---|
-| **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.0/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
+| **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.1/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
 | **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.1/Hawwel-1.3.1.dmg) (`Hawwel-1.3.1.dmg`) | macOS 14 or later |
 
 Older versions and release notes are on the [Releases page](https://github.com/ashrafabdulmn3m/Hawwel/releases).
@@ -44,7 +44,7 @@ Keyboards: on **macOS** it works with the **ABC or US** English layout and any *
 
 ## Install on Windows
 
-1. Download [`Hawwel-Setup.exe`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.0/Hawwel-Setup.exe) and run it.
+1. Download [`Hawwel-Setup.exe`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.1/Hawwel-Setup.exe) and run it.
 2. Windows may show **"Windows protected your PC"**, because the installer isn't code-signed yet. Click **More info**, then **Run anyway**.
 3. Click **Next** until **Install**. Leave **Launch Hawwel** checked, and choose whether it should start with Windows.
 4. Hawwel runs in the **system tray** (the `^` arrow next to the clock). Click its icon to open the window and change the shortcut.
