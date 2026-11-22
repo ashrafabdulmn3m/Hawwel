@@ -54,16 +54,15 @@ To remove it: **Settings → Apps → Installed apps → Hawwel → Uninstall**.
 
 ## Install on macOS
 
-1. Download [`Hawwel-v1.3.0`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.0/Hawwel-1.3.0.dmg) and run it.
-
-2. Open `Hawwel-1.2.1.dmg` and drag **Hawwel** to **Applications**.
+1. Download [`Hawwel-1.3.0.dmg`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v1.3.0/Hawwel-1.3.0.dmg).
+2. Open `Hawwel-1.3.0.dmg` and drag **Hawwel** to **Applications**.
 3. Open it. macOS will warn that the app is from an unidentified developer, because this version isn't notarized by Apple yet.
 4. Go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway**.
 5. If you don't see the button, run this in Terminal and open the app again:
 ```
    xattr -cr /Applications/Hawwel.app
 ```
-5. In the Hawwel window, click **Enable** and turn Hawwel on under **Privacy & Security → Accessibility**. Then quit and reopen the app.
+6. In the Hawwel window, click **Enable** and turn Hawwel on under **Privacy & Security → Accessibility**. Then quit and reopen the app.
 
 ---
 

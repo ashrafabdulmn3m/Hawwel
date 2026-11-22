@@ -10,19 +10,23 @@ import Carbon
 final class LayoutConverter {
     private var enToAr: [String: String] = [:]
     private var arToEn: [String: String] = [:]
+    /// الكيبوردين اللي اتبنى عليهم الجدول (علشان نعرف نبنيه تاني لو المستخدم غيّر الكيبورد)
+    private(set) var layoutIDs: (en: String, ar: String) = ("", "")
 
     init?() {
-        // اطبع كل الكيبوردات الموجودة عشان نتأكد من الأسماء
-        let all = Self.allSourceIDs()
-        print("Installed layouts:", all)
+        // الكيبوردات اللي المستخدم مفعّلها في System Settings، وبعدها كل اللي متسطّب على الماك
+        let enabled = Self.allSourceIDs(includeAllInstalled: false)
+        let installed = Self.allSourceIDs(includeAllInstalled: true)
 
-        guard let enID = all.first(where: { $0.hasSuffix(".US") }),
-              let arID = all.first(where: { $0.contains("Arabic") && $0.contains("PC") }),
+        let (enID, arID) = Self.pickLayouts(enabled: enabled, installed: installed)
+
+        guard let enID, let arID,
               let en = Self.layoutData(id: enID),
               let ar = Self.layoutData(id: arID) else {
-            print("Could not find US or Arabic-PC layout")
+            print("Could not find an English or Arabic layout")
             return nil
         }
+        self.layoutIDs = (enID, arID)
 
         // مفاتيح الكيبورد الرئيسية (ما عدا Return و Tab و Space)
         for keyCode in 0...50 where ![36, 48, 49].contains(keyCode) {
@@ -81,8 +85,26 @@ final class LayoutConverter {
 
     // MARK: - Helpers
 
-    private static func allSourceIDs() -> [String] {
-        let list = TISCreateInputSourceList(nil, true).takeRetainedValue() as! [TISInputSource]
+    /// يختار الكيبورد الإنجليزي والعربي: المفعّل الأول، وبعدين المتسطّب.
+    static func pickLayouts(enabled: [String], installed: [String]) -> (en: String?, ar: String?) {
+        // الإنجليزي: US الأول، وبعدين ABC
+        let isUS: (String) -> Bool = { $0 == "com.apple.keylayout.US" }
+        let isABC: (String) -> Bool = { $0 == "com.apple.keylayout.ABC" }
+        // العربي: Arabic-PC الأول، وبعدين أي كيبورد عربي تاني (Arabic، Arabic-QWERTY…)
+        let isArabicPC: (String) -> Bool = { $0 == "com.apple.keylayout.ArabicPC" }
+        let isArabic: (String) -> Bool = { $0.hasPrefix("com.apple.keylayout.Arabic") }
+
+        // نفضّل اللي المستخدم بيكتب بيه فعلاً، ولو مش مفعّل نرجع للمتسطّب
+        let en = enabled.first(where: isUS) ?? enabled.first(where: isABC)
+            ?? installed.first(where: isUS) ?? installed.first(where: isABC)
+        let ar = enabled.first(where: isArabicPC) ?? enabled.first(where: isArabic)
+            ?? installed.first(where: isArabicPC) ?? installed.first(where: isArabic)
+
+        return (en, ar)
+    }
+
+    static func allSourceIDs(includeAllInstalled: Bool) -> [String] {
+        let list = TISCreateInputSourceList(nil, includeAllInstalled).takeRetainedValue() as! [TISInputSource]
         return list.compactMap { src in
             guard let p = TISGetInputSourceProperty(src, kTISPropertyInputSourceID) else { return nil }
             return Unmanaged<CFString>.fromOpaque(p).takeUnretainedValue() as String

@@ -13,7 +13,8 @@ final class Engine: ObservableObject {
     @Published var status = "جاهز"
     @Published var launchAtLogin = (SMAppService.mainApp.status == .enabled)
 
-    private let converter = LayoutConverter()
+    // علشان لو الاختصار اتداس مرتين ورا بعض ما يحصلش تداخل
+    private var busy = false
 
     init() {
         KeyboardShortcuts.onKeyUp(for: .convert) { [weak self] in
@@ -48,15 +49,18 @@ final class Engine: ObservableObject {
     // MARK: - Conversion
 
     func run() {
+        guard !busy else { return }
         guard AXIsProcessTrusted() else {
             trusted = false
             status = "⚠️ الصلاحية مش مفعّلة"
             return
         }
-        guard let converter else {
-            status = "⚠️ الكيبورد مش لاقيه (US أو Arabic-PC)"
+        // بنبنيه تاني كل مرة (سريع جداً) علشان لو المستخدم فعّل أو شال كيبورد والبرنامج شغّال
+        guard let converter = LayoutConverter() else {
+            status = "⚠️ مش لاقي كيبورد عربي أو إنجليزي (US/ABC)"
             return
         }
+        busy = true
         // نقرأ حالة Caps Lock قبل ما نبعت أي ضغطات
         let capsLock = CGEventSource.flagsState(.combinedSessionState).contains(.maskAlphaShift)
 
@@ -76,6 +80,7 @@ final class Engine: ObservableObject {
                     guard let text else {
                         self.status = "مفيش نص محدد"
                         self.restore(pb, saved)
+                        self.busy = false
                         return
                     }
                     self.replace(with: converter.convert(text, capsLock: capsLock), pb, saved)
@@ -106,6 +111,7 @@ final class Engine: ObservableObject {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.typeText(text)
                 self.status = "✅ اتحول: \(text.prefix(30))"
+                self.busy = false
             }
             return
         }
@@ -117,6 +123,7 @@ final class Engine: ObservableObject {
             self.status = "✅ اتحول: \(text.prefix(30))"
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.restore(pb, saved)
+                self.busy = false
             }
         }
     }
