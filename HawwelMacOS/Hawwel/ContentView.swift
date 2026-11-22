@@ -1,81 +1,93 @@
 import SwiftUI
-import KeyboardShortcuts
+import AppKit
 import Combine
 
+/// التابات اللي في السايدبار
+enum Tab: String, CaseIterable, Identifiable {
+    case home, shortcuts, activity, settings, about
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .home:      return "house"
+        case .shortcuts: return "keyboard"
+        case .activity:  return "chart.bar"
+        case .settings:  return "gearshape"
+        case .about:     return "info.circle"
+        }
+    }
+
+    var title: String { L("tab.\(rawValue)") }
+    var subtitle: String? { self == .about ? nil : L("sub.\(rawValue)") }
+}
+
+enum Links {
+    static let website   = URL(string: "https://hawwelapp.vercel.app/")!
+    static let source    = URL(string: "https://github.com/ashrafabdulmn3m/Hawwel")!
+    static let reportBug = URL(string: "https://www.youtube.com/@HawwelApp")!
+    static let feedback  = URL(string: "https://docs.google.com/forms/d/e/1FAIpQLSea7SjLbKyhVT8Bp3jT2pljAdNw3ymSG9_iVv-fBfg9PpUMkg/viewform")!
+    static let github    = URL(string: "https://github.com/ashrafabdulmn3m")!
+    static let facebook  = URL(string: "https://www.facebook.com/ashrafmn3m/")!
+    static let instagram = URL(string: "https://www.instagram.com/ashrafabdulmonnem/")!
+    static let youtube   = URL(string: "https://www.youtube.com/@HawwelApp")!
+}
+
+/// البانل: سايدبار + محتوى التاب + فوتر (780×560)
 struct ContentView: View {
-    @AppStorage("showMenuBar") private var showMenuBar = true
-    // light | dark — أول مرة بياخد وضع الماك الحالي
-    @AppStorage("appearance") private var appearance = HW.systemAppearance
-    @Environment(\.dismissWindow) private var dismissWindow // last edit 22oct
     @EnvironmentObject var engine: Engine
-    @EnvironmentObject var updater: UpdaterManager
-    @State private var testText = ""
-    @State private var shortcut: KeyboardShortcuts.Shortcut? = KeyboardShortcuts.getShortcut(for: .convert)
+    @AppStorage(Prefs.language) private var language = AppLanguage.ar.rawValue
+    @AppStorage(Prefs.appearance) private var appearance = "system"
+    @AppStorage(Prefs.sidebarCollapsed) private var collapsed = false
+    @Environment(\.dismissWindow) private var dismissWindow
+    @State private var tab: Tab
+
+    init(initialTab: Tab = .home) {
+        _tab = State(initialValue: initialTab)
+    }
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
-    private var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
-    }
+    private var lang: AppLanguage { AppLanguage(rawValue: language) ?? .ar }
 
-    private var colorScheme: ColorScheme { appearance == "dark" ? .dark : .light }
-
-    // أجزاء الاختصار كـ "كابسات": ⌃ + ⌥ + K
-    private var chips: [String] {
-        guard let s = shortcut else { return [] }
-        let mods: Set<Character> = ["⌃", "⌥", "⇧", "⌘"]
-        var out: [String] = []
-        var key = ""
-        for ch in s.description {
-            if mods.contains(ch) { out.append(String(ch)) } else { key.append(ch) }
-        }
-        if !key.isEmpty { out.append(key) }
-        return out
-    }
-
-    // شكل الحالة (جاهز ●)
-    private var statusText: String {
-        engine.status
-            .replacingOccurrences(of: "⚠️", with: "")
-            .replacingOccurrences(of: "✅", with: "")
-            .trimmingCharacters(in: .whitespaces)
-    }
-    private var statusColors: (bg: Color, dot: Color, text: Color) {
-        let s = engine.status
-        if s.hasPrefix("⚠️") { return (HW.pillWarnBg, HW.pillWarnDot, HW.pillWarnText) }
-        if s.hasPrefix("✅") || s.hasPrefix("جاهز") { return (HW.pillOkBg, HW.pillOkDot, HW.pillOkText) }
-        return (HW.pillIdleBg, HW.pillIdleDot, HW.pillIdleText)
-    }
-
-    private var logo: NSImage {
-        NSImage(named: "hawwel-logo") ?? NSApp.applicationIconImage
+    /// أزرار النافذة (الأحمر والأصفر والأخضر) بتبقى في ناحية لغة الماك.
+    /// لو السايدبار في نفس الناحية، بننزّل محتواه تحت الأزرار.
+    private var sidebarUnderWindowButtons: Bool {
+        let buttonsOnLeft = NSApp.userInterfaceLayoutDirection == .leftToRight
+        let sidebarOnLeft = lang == .en
+        return buttonsOnLeft == sidebarOnLeft
     }
 
     var body: some View {
-        VStack(spacing: 12) {
-            header
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Sidebar(tab: $tab, collapsed: collapsed, topInset: sidebarUnderWindowButtons ? 26 : 0) {
+                    withAnimation(.easeInOut(duration: 0.2)) { collapsed.toggle() }
+                }
+                .frame(width: collapsed ? HW.sideClosed : HW.sideOpen)
 
-            if !engine.trusted { permissionCard }
+                Rectangle().fill(HW.line).frame(width: 1)
 
-            shortcutCard
-            tryCard
-            settingsCard
-            footer
+                MainArea(tab: $tab)
+            }
+            Footer()
         }
-        .padding(.horizontal, 22)
-        .padding(.top, 18)
-        .padding(.bottom, 20)
-        .frame(width: 460)
+        .frame(minWidth: HW.minWidth, idealWidth: HW.panelWidth, maxWidth: .infinity,
+               minHeight: HW.minHeight, idealHeight: HW.panelHeight, maxHeight: .infinity)
         .background(HW.bg)
-        .environment(\.layoutDirection, .rightToLeft)
-        .preferredColorScheme(colorScheme)
-        .onReceive(tick) { _ in engine.trusted = AXIsProcessTrusted() }
+        .foregroundStyle(HW.ink)
+        .ignoresSafeArea()
+        .environment(\.layoutDirection, lang.layoutDirection)
+        .environment(\.locale, lang.locale)
+        .id(language) // لما اللغة تتغيّر: كل النصوص تتقري تاني
+        .background(WindowConfigurator())
+        .onReceive(tick) { _ in engine.refreshTrust() }
+        .onChange(of: appearance) { _, mode in Prefs.applyAppearance(mode) }
         .onAppear {
-            // الإصدارات القديمة كان فيها "تلقائي": نحوّله للوضع الحالي بتاع الماك
-            if appearance != "light" && appearance != "dark" { appearance = HW.systemAppearance }
+            if SnapshotRenderer.active { return }
+            Prefs.applyAppearance(appearance)
             if !AppMode.launchHandled {
                 AppMode.launchHandled = true
-                let firstRun = !UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
-                UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+                let firstRun = !UserDefaults.standard.bool(forKey: Prefs.hasLaunchedBefore)
+                UserDefaults.standard.set(true, forKey: Prefs.hasLaunchedBefore)
                 // مش أول مرة والمنيو بار شغّال: نخفي النافذة ونفضل في المنيو بار
                 if !firstRun && AppMode.menuBarEnabled {
                     dismissWindow(id: "main")
@@ -83,187 +95,263 @@ struct ContentView: View {
                 }
             }
             AppMode.showDock()
-        } //last edit on appear 22oct
+        }
     }
+}
 
-    // MARK: - الأجزاء
+// MARK: - المحتوى
 
-    private var header: some View {
-        HStack(spacing: 14) {
-            Image(nsImage: logo)
-                .resizable()
-                .scaledToFit()
-                .padding(4)
-                .frame(width: 52, height: 52)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 14))
-                .shadow(color: Color.black.opacity(0.12), radius: 6, y: 2)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Hawwel - حوّل")
-                    .font(HW.font(24, .bold))
-                    .foregroundStyle(HW.ink)
-                Text("حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار")
-                    .font(HW.font(13))
-                    .foregroundStyle(HW.muted)
+private struct MainArea: View {
+    @Binding var tab: Tab
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(tab.title).font(HW.font(18, .bold))
+                if let sub = tab.subtitle {
+                    Text(sub).font(HW.font(12)).foregroundStyle(HW.muted)
+                }
+            }
+            .padding(.top, 16)
+            .padding(.horizontal, HW.contentPadding)
+            .padding(.bottom, 10)
+
+            ScrollView {
+                Group {
+                    switch tab {
+                    case .home:      HomeTab(tab: $tab)
+                    case .shortcuts: ShortcutsTab()
+                    case .activity:  ActivityTab()
+                    case .settings:  SettingsTab()
+                    case .about:     AboutTab()
+                    }
+                }
+                .padding(.horizontal, HW.contentPadding)
+                .padding(.top, 4)
+                .padding(.bottom, 18)
+            }
+            .scrollIndicators(.automatic)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+}
+
+// MARK: - السايدبار
+
+private struct Sidebar: View {
+    @Binding var tab: Tab
+    let collapsed: Bool
+    let topInset: CGFloat
+    let toggle: () -> Void
+    @EnvironmentObject var engine: Engine
+    @EnvironmentObject var recorder: ShortcutRecorder
+    @Environment(\.layoutDirection) private var direction
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            brand
+            VStack(spacing: 2) {
+                ForEach(Tab.allCases) { t in
+                    NavButton(tab: t, current: tab == t, collapsed: collapsed) { tab = t }
+                }
             }
             Spacer(minLength: 0)
-            HWAppearanceButton(selection: $appearance)
+            stateBadge
         }
-        .frame(maxWidth: .infinity)
-        .padding(.bottom, 4)
+        .padding(.top, 16 + topInset)
+        .padding(.horizontal, collapsed ? 10 : 12)
+        .padding(.bottom, 14)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(HW.side)
+        .clipped()
     }
 
-    private var permissionCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("الصلاحية مش مفعّلة")
-                .font(HW.font(15, .semi))
-                .foregroundStyle(HW.ink)
-            Text("Hawwel محتاج صلاحية Accessibility علشان يقدر يحوّل النص المحدد.")
-                .font(HW.font(13))
-                .foregroundStyle(HW.muted)
-            Button("فعّلها") {
-                engine.requestPermission()
-                engine.openAccessibilitySettings()
+    @ViewBuilder private var brand: some View {
+        if collapsed {
+            VStack(spacing: 10) {
+                AppLogo(size: 36, radius: 9)
+                toggleButton
             }
-            .buttonStyle(HWButtonStyle())
+            .frame(maxWidth: .infinity)
+        } else {
+            HStack(spacing: 10) {
+                AppLogo(size: 40, radius: 10)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(L("app.name")).font(HW.font(15, .bold)).lineLimit(1)
+                    Text("v\(AppInfo.version)").font(HW.font(11)).foregroundStyle(HW.muted)
+                }
+                Spacer(minLength: 0)
+                toggleButton
+            }
+            .padding(.horizontal, 4)
         }
-        .hwCard(fill: HW.warnBg)
     }
 
-    private var shortcutCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("الاختصار")
-                .font(HW.font(14, .semi))
-                .foregroundStyle(HW.ink)
-            HStack {
-                HStack(spacing: 6) {
-                    if chips.isEmpty {
-                        Text("لسه مفيش اختصار")
-                            .font(HW.font(14))
-                            .foregroundStyle(HW.muted)
-                    }
-                    ForEach(Array(chips.enumerated()), id: \.offset) { index, chip in
-                        if index > 0 {
-                            Text("+").font(HW.font(16)).foregroundStyle(HW.muted)
-                        }
-                        Text(chip)
-                            .font(HW.font(16, .semi))
-                            .foregroundStyle(HW.ink)
-                            .frame(minWidth: 42, minHeight: 34)
-                            .padding(.horizontal, 6)
-                            .background(HW.chipBg, in: RoundedRectangle(cornerRadius: 10))
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(HW.chipBorder, lineWidth: 1))
-                    }
-                }
-                .environment(\.layoutDirection, .leftToRight)
-
-                Spacer(minLength: 8)
-
-                // مسجّل الاختصار الأصلي من مكتبة KeyboardShortcuts (بيغيّر الاختصار)
-                KeyboardShortcuts.Recorder("", name: .convert) { newShortcut in
-                    shortcut = newShortcut
-                }
-                .environment(\.layoutDirection, .leftToRight)
-                .fixedSize()
-            }
-        }
-        .hwCard()
+    private var toggleButton: some View {
+        HoverIconButton(systemName: direction == .rightToLeft ? "sidebar.right" : "sidebar.left",
+                        help: collapsed ? L("side.expand") : L("side.collapse"),
+                        action: toggle)
     }
 
-    private var tryCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("جرّب هنا")
-                .font(HW.font(14, .semi))
-                .foregroundStyle(HW.ink)
-
-            ZStack(alignment: .topLeading) {
-                TextEditor(text: $testText)
-                    .font(HW.font(16))
-                    .foregroundStyle(HW.ink)
-                    .scrollContentBackground(.hidden)
-                    .padding(6)
-                if testText.isEmpty {
-                    Text("اكتب بالكيبورد الغلط، حدده، واضغط الاختصار")
-                        .font(HW.font(15))
-                        .foregroundStyle(HW.placeholder)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 14)
-                        .allowsHitTesting(false)
-                }
-            }
-            .frame(height: 70)
-            .background(HW.field, in: RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(HW.fieldBorder, lineWidth: 1))
-
-            HStack {
-                Text("اكتب، حدده، واضغط الاختصار")
-                    .font(HW.font(13))
-                    .foregroundStyle(HW.muted)
-                Spacer()
-                HStack(spacing: 8) {
-                    Circle().fill(statusColors.dot).frame(width: 8, height: 8)
-                    Text(statusText)
-                        .font(HW.font(13, .semi))
-                        .foregroundStyle(statusColors.text)
-                        .lineLimit(1)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
-                .background(statusColors.bg, in: Capsule())
-                .frame(maxWidth: 230)
+    @ViewBuilder private var stateBadge: some View {
+        let ok = engine.trusted
+        let label = ok ? L("side.running", recorder.compact) : L("side.needsPermission")
+        HStack(spacing: 8) {
+            Circle().fill(ok ? HW.ok : HW.warn).frame(width: 7, height: 7)
+            if !collapsed {
+                Text(label).font(HW.font(12, .semi)).lineLimit(1)
             }
         }
-        .hwCard()
+        .foregroundStyle(ok ? HW.ok : HW.warn)
+        .padding(.vertical, collapsed ? 10 : 8)
+        .padding(.horizontal, collapsed ? 0 : 10)
+        .frame(maxWidth: .infinity, alignment: collapsed ? .center : .leading)
+        .background(ok ? HW.okSoft : HW.warnSoft, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .help(label)
     }
+}
 
-    private var settingsCard: some View {
-        VStack(spacing: 0) {
-            Toggle(isOn: Binding(
-                get: { engine.launchAtLogin },
-                set: { engine.setLaunchAtLogin($0) }
-            )) {
-                Text("شغّل Hawwel مع بداية الجهاز").font(HW.font(15)).foregroundStyle(HW.ink)
-            }
-            .toggleStyle(HWSwitchStyle())
-            .frame(minHeight: 48)
+private struct NavButton: View {
+    let tab: Tab
+    let current: Bool
+    let collapsed: Bool
+    let action: () -> Void
+    @State private var hovering = false
 
-            Rectangle().fill(HW.divider).frame(height: 1)
-
-            Toggle(isOn: $showMenuBar) {
-                Text("أظهر Hawwel في المنيو بار").font(HW.font(15)).foregroundStyle(HW.ink)
-            }
-            .toggleStyle(HWSwitchStyle())
-            .frame(minHeight: 48)
-
-            Rectangle().fill(HW.divider).frame(height: 1)
-
-            Toggle(isOn: Binding(
-                get: { updater.automaticallyChecks },
-                set: { updater.setAutomaticChecks($0) }
-            )) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("دوّر على التحديثات تلقائياً").font(HW.font(15)).foregroundStyle(HW.ink)
-                    Text("بيتصل بـ GitHub بس").font(HW.font(12)).foregroundStyle(HW.muted)
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: tab.icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .frame(width: 18, height: 18)
+                if !collapsed {
+                    Text(tab.title).font(HW.font(13, .medium)).lineLimit(1)
                 }
             }
-            .toggleStyle(HWSwitchStyle())
-            .frame(minHeight: 52)
+            .foregroundStyle(current ? HW.accent : (hovering ? HW.ink : HW.muted))
+            .padding(.vertical, 8)
+            .padding(.horizontal, collapsed ? 0 : 10)
+            .frame(maxWidth: .infinity, alignment: collapsed ? .center : .leading)
+            .background(current ? HW.accentSoft : (hovering ? HW.hover : .clear),
+                        in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .contentShape(Rectangle())
         }
-        .hwCard(padding: 16)
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .help(collapsed ? tab.title : "")
+        .accessibilityLabel(tab.title)
+        .accessibilityAddTraits(current ? .isSelected : [])
     }
+}
 
-    private var footer: some View {
+/// زرار أيقونة صغير (طي السايدبار)
+struct HoverIconButton: View {
+    let systemName: String
+    let help: String
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(hovering ? HW.ink : HW.muted)
+                .frame(width: 28, height: 28)
+                .background(hovering ? HW.hover : .clear, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .help(help)
+        .accessibilityLabel(help)
+    }
+}
+
+/// اللوجو في مربع أبيض
+struct AppLogo: View {
+    let size: CGFloat
+    let radius: CGFloat
+
+    var body: some View {
+        Image(nsImage: NSImage(named: "hawwel-logo") ?? NSApp.applicationIconImage)
+            .resizable()
+            .scaledToFit()
+            .padding(size * 0.07)
+            .frame(width: size, height: size)
+            .background(Color.white, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).stroke(HW.line, lineWidth: 1))
+            .accessibilityHidden(true)
+    }
+}
+
+// MARK: - الفوتر
+
+private struct Footer: View {
+    var body: some View {
         HStack(spacing: 12) {
-            Button("دوّر على تحديث") { updater.checkForUpdates() }
-                .buttonStyle(HWButtonStyle())
-                .disabled(!updater.canCheckForUpdates)
-            Button("خروج من Hawwel") { NSApplication.shared.terminate(nil) }
-                .buttonStyle(HWButtonStyle(kind: .outline))
-            Spacer()
-            Text("v\(appVersion)")
-                .font(HW.font(15))
+            Text(L("footer.copyright"))
+                .font(HW.font(11.5))
                 .foregroundStyle(HW.muted)
-                .environment(\.layoutDirection, .leftToRight)
+                .lineLimit(1)
+            Spacer(minLength: 0)
+            HStack(spacing: 4) {
+                SocialButton(image: "social-facebook", name: "Facebook", url: Links.facebook)
+                SocialButton(image: "social-instagram", name: "Instagram", url: Links.instagram)
+                SocialButton(image: "social-github", name: "GitHub", url: Links.github)
+                SocialButton(image: "social-youtube", name: "YouTube", url: Links.youtube)
+            }
         }
-        .padding(.top, 4)
+        .padding(.horizontal, 16)
+        .frame(height: HW.footerHeight)
+        .background(HW.side)
+        .overlay(alignment: .top) { Rectangle().fill(HW.line).frame(height: 1) }
     }
+}
+
+private struct SocialButton: View {
+    let image: String
+    let name: String
+    let url: URL
+    @State private var hovering = false
+
+    var body: some View {
+        Button { NSWorkspace.shared.open(url) } label: {
+            Image(image)
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .foregroundStyle(hovering ? HW.ink : HW.muted)
+                .frame(width: 28, height: 28)
+                .background(hovering ? HW.hover : .clear, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .help(name)
+        .accessibilityLabel(name)
+    }
+}
+
+// MARK: - النافذة
+
+enum AppInfo {
+    static var version: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+    }
+}
+
+/// من غير شريط عنوان، فبنخلّي النافذة تتسحب من أي مكان فاضي فيها.
+private struct WindowConfigurator: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            guard let window = view.window else { return }
+            window.isMovableByWindowBackground = true
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .hidden
+        }
+        return view
+    }
+    func updateNSView(_ nsView: NSView, context: Context) {}
 }

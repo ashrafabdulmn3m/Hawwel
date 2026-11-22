@@ -42,10 +42,23 @@ final class LayoutConverter {
     /// يحوّل النص تلقائياً حسب الاتجاه.
     /// capsLock: حالة Caps Lock وقت التحويل، علشان الحروف الكبيرة بسببه ما تتحوّلش كأنها Shift.
     func convert(_ text: String, capsLock: Bool = false) -> String {
+        if isToArabic(text) { return map(fixCapsLock(text, capsLock: capsLock), enToAr) }
+        return map(text, arToEn)
+    }
+
+    /// النص هيتحوّل لعربي؟ (لو أغلب حروفه لاتيني)
+    func isToArabic(_ text: String) -> Bool {
         let latin = text.unicodeScalars.filter { $0.properties.isAlphabetic && $0.isASCII }.count
         let arabic = text.unicodeScalars.filter { (0x0600...0x06FF).contains($0.value) }.count
-        if latin > arabic { return map(fixCapsLock(text, capsLock: capsLock), enToAr) }
-        return map(text, arToEn)
+        return latin > arabic
+    }
+
+    /// بيغيّر كيبورد الماك للكيبورد ده، لو المستخدم مفعّله.
+    static func selectInputSource(id: String) {
+        let filter = [kTISPropertyInputSourceID as String: id] as CFDictionary
+        guard let list = TISCreateInputSourceList(filter, false)?.takeRetainedValue() as? [TISInputSource],
+              let src = list.first else { return }
+        TISSelectInputSource(src)
     }
 
     /// لو Caps Lock شغّال: كل حرف لاتيني ظاهر بعكس الـ Shift الحقيقي، فنقلب حالته.

@@ -4,19 +4,35 @@ import ApplicationServices
 import ServiceManagement
 import KeyboardShortcuts
 
-extension KeyboardShortcuts.Name {
-    static let convert = Self("convert", initial: .init(.k, modifiers: [.control]))
+/// حالة آخر عملية (بتظهر في السايدبار وكارت "جرّب هنا")
+enum EngineStatus: Equatable {
+    case ready
+    case converted
+    case noSelection
+    case noPermission
+    case noKeyboard
+}
+
+/// بيتبعت مع كل ضغطة اختصار علشان كارت "جرّب هنا" ينوّر الكيكابس ويحدّث الخطوات.
+struct ConversionEvent: Equatable {
+    let id = UUID()
+    let success: Bool
 }
 
 final class Engine: ObservableObject {
     @Published var trusted = AXIsProcessTrusted()
-    @Published var status = "جاهز"
+    @Published private(set) var status: EngineStatus = .ready
+    @Published private(set) var lastEvent: ConversionEvent?
     @Published var launchAtLogin = (SMAppService.mainApp.status == .enabled)
+    @Published var loginError = false
+
+    let stats: Stats
 
     // علشان لو الاختصار اتداس مرتين ورا بعض ما يحصلش تداخل
     private var busy = false
 
-    init() {
+    init(stats: Stats) {
+        self.stats = stats
         KeyboardShortcuts.onKeyUp(for: .convert) { [weak self] in
             // ننتظر شوية علشان المستخدم يرفع إيده من الزراير
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { self?.run() }
@@ -24,6 +40,12 @@ final class Engine: ObservableObject {
     }
 
     // MARK: - Permission / Login
+
+    func refreshTrust() {
+        let now = AXIsProcessTrusted()
+        if now != trusted { trusted = now }
+        if now && status == .noPermission { status = .ready }
+    }
 
     func requestPermission() {
         let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
@@ -40,8 +62,9 @@ final class Engine: ObservableObject {
         do {
             if on { try SMAppService.mainApp.register() }
             else { try SMAppService.mainApp.unregister() }
+            loginError = false
         } catch {
-            status = "تعذّر تغيير إعداد التشغيل مع الجهاز"
+            loginError = true
         }
         launchAtLogin = (SMAppService.mainApp.status == .enabled)
     }
@@ -52,40 +75,58 @@ final class Engine: ObservableObject {
         guard !busy else { return }
         guard AXIsProcessTrusted() else {
             trusted = false
-            status = "⚠️ الصلاحية مش مفعّلة"
+            finish(.noPermission)
             return
         }
         // بنبنيه تاني كل مرة (سريع جداً) علشان لو المستخدم فعّل أو شال كيبورد والبرنامج شغّال
         guard let converter = LayoutConverter() else {
-            status = "⚠️ مش لاقي كيبورد عربي أو إنجليزي (US/ABC)"
+            finish(.noKeyboard)
             return
         }
         busy = true
-        // نقرأ حالة Caps Lock قبل ما نبعت أي ضغطات
+        // نقرأ حالة Caps Lock والبرنامج اللي قدام قبل ما نبعت أي ضغطات
         let capsLock = CGEventSource.flagsState(.combinedSessionState).contains(.maskAlphaShift)
+        let front = NSWorkspace.shared.frontmostApplication
+        let isPractice = front?.bundleIdentifier == Bundle.main.bundleIdentifier // كارت "جرّب هنا"
 
         let pb = NSPasteboard.general
         let saved = snapshot(pb)
 
         copySelection(pb) { [weak self] text in
             guard let self else { return }
-            if let text {
-                self.replace(with: converter.convert(text, capsLock: capsLock), pb, saved)
+            guard let text else {
+                // مفيش كلام محدد: ما نعملش حاجة ونقول للمستخدم يحدد الأول
+                self.restore(pb, saved)
+                self.busy = false
+                self.finish(.noSelection)
                 return
             }
-            // مفيش تحديد: حدد آخر كلمة (⌥⇧←)
-            self.press(123, [.maskAlternate, .maskShift])
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.copySelection(pb) { text in
-                    guard let text else {
-                        self.status = "مفيش نص محدد"
-                        self.restore(pb, saved)
-                        self.busy = false
-                        return
-                    }
-                    self.replace(with: converter.convert(text, capsLock: capsLock), pb, saved)
+            let toArabic = converter.isToArabic(text)
+            let output = converter.convert(text, capsLock: capsLock)
+            self.replace(with: output, pb, saved, front: front) {
+                self.busy = false
+                self.finish(.converted)
+                if !isPractice {
+                    self.stats.record(chars: text.count, toArabic: toArabic, app: front?.localizedName)
                 }
+                self.afterConvert(toArabic: toArabic, converter: converter)
             }
+        }
+    }
+
+    private func finish(_ result: EngineStatus) {
+        status = result
+        lastEvent = ConversionEvent(success: result == .converted)
+    }
+
+    /// الصوت وتغيير لغة الكيبورد (من الإعدادات)
+    private func afterConvert(toArabic: Bool, converter: LayoutConverter) {
+        let d = UserDefaults.standard
+        if d.bool(forKey: Prefs.playSound) {
+            ConvertSound.play()
+        }
+        if d.bool(forKey: Prefs.switchKeyboard) {
+            LayoutConverter.selectInputSource(id: toArabic ? converter.layoutIDs.ar : converter.layoutIDs.en)
         }
     }
 
@@ -101,32 +142,33 @@ final class Engine: ObservableObject {
         }
     }
 
-    private func replace(with text: String, _ pb: NSPasteboard, _ saved: [NSPasteboardItem]) {
-        let adobe = NSWorkspace.shared.frontmostApplication?
-            .bundleIdentifier?.hasPrefix("com.adobe") == true
+    private func replace(with text: String, _ pb: NSPasteboard, _ saved: [NSPasteboardItem],
+                         front: NSRunningApplication?, completion: @escaping () -> Void) {
+        let adobe = front?.bundleIdentifier?.hasPrefix("com.adobe") == true
 
         if adobe {
             // برامج Adobe: نرجّع الـ clipboard فوراً ونكتب النص بدل اللصق
             restore(pb, saved)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.typeText(text)
-                self.status = "✅ اتحول: \(text.prefix(30))"
-                self.busy = false
+                completion()
             }
             return
         }
 
         pb.clearContents()
         pb.setString(text, forType: .string)
+        // علشان برامج الـ clipboard history (Maccy, Raycast…) ما تحفظش النص المؤقت ده
+        pb.setString("", forType: NSPasteboard.PasteboardType("org.nspasteboard.TransientType"))
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             self.press(9, .maskCommand) // Cmd+V
-            self.status = "✅ اتحول: \(text.prefix(30))"
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.restore(pb, saved)
-                self.busy = false
+                completion()
             }
         }
     }
+
     private func snapshot(_ pb: NSPasteboard) -> [NSPasteboardItem] {
         (pb.pasteboardItems ?? []).map { item in
             let copy = NSPasteboardItem()
@@ -165,5 +207,21 @@ final class Engine: ObservableObject {
             up?.post(tap: .cghidEventTap)
             i += 20
         }
+    }
+}
+
+/// صوت التحويل: نغمتين ناعمتين وقصيرين (convert-sound.wav)، بصوت واطي.
+enum ConvertSound {
+    private static let sound: NSSound? = {
+        guard let url = Bundle.main.url(forResource: "convert-sound", withExtension: "wav"),
+              let s = NSSound(contentsOf: url, byReference: true) else { return nil }
+        s.volume = 0.7
+        return s
+    }()
+
+    static func play() {
+        guard let sound else { return }
+        sound.stop() // لو اتداس بسرعة ورا بعض، يبدأ من الأول بدل ما يتراكب
+        sound.play()
     }
 }
