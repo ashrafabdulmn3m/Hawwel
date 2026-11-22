@@ -6,13 +6,13 @@ using Microsoft.Win32;
 
 namespace Hawwel;
 
-/// <summary>الوضع النهاري/الليلي/التلقائي: بنبدّل ألوان الـ resources وقت التشغيل (DynamicResource).</summary>
+/// <summary>الوضع النهاري/الليلي: بنبدّل ألوان الـ resources وقت التشغيل (DynamicResource).</summary>
 public static class Theme
 {
-    public const string Light = "light", Dark = "dark", Auto = "auto";
+    public const string Light = "light", Dark = "dark";
 
     private static Settings _settings = null!;
-    public static string Mode { get; private set; } = Auto;
+    public static string Mode { get; private set; } = Light;
     public static bool IsDark { get; private set; }
 
     // (نهاري, ليلي)
@@ -41,7 +41,6 @@ public static class Theme
         ["UpdateBg"]        = ("#E8F3FD", "#16294A"),
         ["UpdateBorder"]    = ("#BBDDFB", "#25477A"),
         ["ProgressTrack"]   = ("#CFE3F8", "#25354F"),
-        ["SegBg"]           = ("#EAEFF8", "#0F1422"),
         ["Warn"]            = ("#B45309", "#FBBF24"),
         ["PillOkBg"]        = ("#E2F3E7", "#14382A"),
         ["PillOkDot"]       = ("#2EA44F", "#34D26B"),
@@ -58,12 +57,12 @@ public static class Theme
     {
         _settings = settings;
         Mode = Normalize(settings.Theme);
-        // لما المستخدم يغيّر وضع ويندوز والتطبيق على "تلقائي"
-        SystemEvents.UserPreferenceChanged += (_, _) =>
+        // الإصدارات القديمة كان فيها "تلقائي" (أو أول تشغيل): بناخد وضع ويندوز الحالي ونحفظه
+        if (settings.Theme != Mode)
         {
-            if (Mode == Auto)
-                Application.Current.Dispatcher.BeginInvoke(new Action(Apply));
-        };
+            settings.Theme = Mode;
+            settings.Save();
+        }
         Apply();
     }
 
@@ -75,7 +74,10 @@ public static class Theme
         Apply();
     }
 
-    private static string Normalize(string? m) => m is Light or Dark ? m : Auto;
+    /// <summary>بيبدّل بين النهاري والليلي (زرار الدايرة).</summary>
+    public static void Toggle() => Set(IsDark ? Light : Dark);
+
+    private static string Normalize(string? m) => m is Light or Dark ? m : (SystemUsesDark() ? Dark : Light);
 
     private static bool SystemUsesDark()
     {
@@ -89,7 +91,7 @@ public static class Theme
 
     private static void Apply()
     {
-        IsDark = Mode == Dark || (Mode == Auto && SystemUsesDark());
+        IsDark = Mode == Dark;
         var res = Application.Current.Resources;
         foreach (var (key, c) in Palette)
         {

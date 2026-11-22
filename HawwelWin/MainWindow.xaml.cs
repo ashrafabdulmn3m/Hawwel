@@ -62,8 +62,20 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Theme_Click(object sender, RoutedEventArgs e) =>
-        Theme.Set((string)((RadioButton)sender).Tag);
+    private void ThemeToggle_Click(object sender, RoutedEventArgs e)
+    {
+        Theme.Toggle();
+        RefreshThemeToggle();
+    }
+
+    // أيقونة الوضع الحالي: شمس للنهاري، قمر لليلي
+    private void RefreshThemeToggle()
+    {
+        ThemeToggle.Content = Theme.IsDark ? "\uE708" : "\uE706";
+        var title = Theme.IsDark ? "الوضع الليلي" : "الوضع النهاري";
+        ThemeToggle.ToolTip = title;
+        System.Windows.Automation.AutomationProperties.SetName(ThemeToggle, title);
+    }
 
     private void TestBox_TextChanged(object sender, TextChangedEventArgs e) =>
         TestPlaceholder.Visibility = string.IsNullOrEmpty(TestBox.Text) ? Visibility.Visible : Visibility.Collapsed;
@@ -81,9 +93,7 @@ public partial class MainWindow : Window
             keys.Add(part);
         }
         HotkeyKeys.ItemsSource = keys;
-        ThemeLight.IsChecked = Theme.Mode == Theme.Light;
-        ThemeDark.IsChecked = Theme.Mode == Theme.Dark;
-        ThemeAuto.IsChecked = Theme.Mode == Theme.Auto;
+        RefreshThemeToggle();
         LaunchCheck.IsChecked = Settings.LaunchAtLogin;
         TrayCheck.IsChecked = s.ShowTray;
         AutoUpdateCheck.IsChecked = s.AutoCheckUpdates;

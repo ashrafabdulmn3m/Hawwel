@@ -28,7 +28,6 @@
         <SolidColorBrush x:Key="UpdateBg" Color="#E8F3FD"/>
         <SolidColorBrush x:Key="UpdateBorder" Color="#BBDDFB"/>
         <SolidColorBrush x:Key="ProgressTrack" Color="#CFE3F8"/>
-        <SolidColorBrush x:Key="SegBg" Color="#EAEFF8"/>
 
         <!-- ===== الخطوط (IBM Plex Sans Arabic) ===== -->
         <FontFamily x:Key="HwFont">pack://application:,,,/Fonts/#IBM Plex Sans Arabic</FontFamily>
@@ -198,30 +197,30 @@
         </Style>
 
 
-        <!-- ===== أزرار اختيار المظهر (نهاري / ليلي / تلقائي) ===== -->
-        <Style x:Key="SegmentStyle" TargetType="RadioButton">
-            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+        <!-- ===== زرار المظهر: دايرة فيها أيقونة الوضع (شمس / قمر) ===== -->
+        <Style x:Key="CircleButton" TargetType="Button">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource AccentText}"/>
+            <!-- Segoe Fluent Icons في ويندوز 11، و Segoe MDL2 Assets في ويندوز 10 -->
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="bd" Background="Transparent" CornerRadius="9" MinWidth="76" Height="34">
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="20" Background="{DynamicResource Card}"
+                                BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Accent}"/>
-                                <Setter Property="Foreground" Value="White"/>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentSoft}"/>
                             </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                    <Condition Property="IsChecked" Value="False"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
-                            </MultiTrigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentSoftHover}"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>

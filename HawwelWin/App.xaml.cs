@@ -151,10 +151,11 @@ public partial class App : Application
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("خروج", null, (_, _) => Quit());
 
-        var iconStream = GetResourceStream(new Uri("pack://application:,,,/Assets/hawwel.ico")).Stream;
+        // لوجو Hawwel المختصر (ح + P) بالأزرق؛ الملف فيه كذا مقاس، ونختار المقاس اللي الـ tray محتاجه
+        var iconStream = GetResourceStream(new Uri("pack://application:,,,/Assets/tray.ico")).Stream;
         _tray = new Forms.NotifyIcon
         {
-            Icon = new Icon(iconStream),
+            Icon = new Icon(iconStream, Forms.SystemInformation.SmallIconSize),
             Text = "Hawwel - حوّل",
             ContextMenuStrip = menu,
             Visible = Settings.ShowTray
