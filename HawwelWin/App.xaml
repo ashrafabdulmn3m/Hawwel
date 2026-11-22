@@ -4,79 +4,133 @@
              ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
 
-        <!-- ===== الألوان (قيم النهاري، والـ Theme.cs بيستبدلها حسب الوضع) ===== -->
-        <SolidColorBrush x:Key="Accent" Color="#1E88E5"/>
-        <SolidColorBrush x:Key="AccentHover" Color="#1976D2"/>
-        <SolidColorBrush x:Key="AccentSoft" Color="#E3F1FD"/>
-        <SolidColorBrush x:Key="AccentSoftHover" Color="#D1E7FB"/>
-        <SolidColorBrush x:Key="Ink" Color="#171C2E"/>
-        <SolidColorBrush x:Key="Muted" Color="#5F6B85"/>
-        <SolidColorBrush x:Key="Bg" Color="#F3F5FA"/>
+        <!-- ===== الألوان (قيم الفاتح، والـ Theme.cs بيستبدلها حسب الوضع) ===== -->
+        <SolidColorBrush x:Key="Bg" Color="#F3F5F9"/>
+        <SolidColorBrush x:Key="Side" Color="#E8ECF4"/>
         <SolidColorBrush x:Key="Card" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="CardBorder" Color="#E8ECF4"/>
-        <SolidColorBrush x:Key="Divider" Color="#ECEFF5"/>
-        <SolidColorBrush x:Key="Field" Color="#FAFBFE"/>
-        <SolidColorBrush x:Key="FieldBorder" Color="#C9D1E3"/>
-        <SolidColorBrush x:Key="Placeholder" Color="#8B94AB"/>
-        <SolidColorBrush x:Key="SwitchOff" Color="#C7CEDC"/>
-        <SolidColorBrush x:Key="AccentText" Color="#1E88E5"/>
-        <SolidColorBrush x:Key="OutlineBg" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="OutlineBorder" Color="#D5DBE8"/>
-        <SolidColorBrush x:Key="OutlineHover" Color="#F3F5FA"/>
-        <SolidColorBrush x:Key="ChipBg" Color="#F4F7FC"/>
-        <SolidColorBrush x:Key="ChipBorder" Color="#C9D3E6"/>
-        <SolidColorBrush x:Key="UpdateBg" Color="#E8F3FD"/>
-        <SolidColorBrush x:Key="UpdateBorder" Color="#BBDDFB"/>
-        <SolidColorBrush x:Key="ProgressTrack" Color="#CFE3F8"/>
+        <SolidColorBrush x:Key="Line" Color="#DCE2EC"/>
+        <SolidColorBrush x:Key="Ink" Color="#141B2D"/>
+        <SolidColorBrush x:Key="Muted" Color="#66708A"/>
+        <SolidColorBrush x:Key="Accent" Color="#2F86E4"/>
+        <SolidColorBrush x:Key="AccentHover" Color="#2577D2"/>
+        <SolidColorBrush x:Key="AccentSoft" Color="#E2EDFC"/>
+        <SolidColorBrush x:Key="Ok" Color="#2E9D57"/>
+        <SolidColorBrush x:Key="OkSoft" Color="#E0F3E6"/>
+        <SolidColorBrush x:Key="Warn" Color="#B8770C"/>
+        <SolidColorBrush x:Key="WarnSoft" Color="#FBF0DC"/>
+        <SolidColorBrush x:Key="WarnLine" Color="#E9CF9E"/>
+        <SolidColorBrush x:Key="Field" Color="#F6F8FB"/>
+        <SolidColorBrush x:Key="Key" Color="#F4F6FA"/>
+        <SolidColorBrush x:Key="KeyShadow" Color="#D3D8E2"/>
+        <SolidColorBrush x:Key="Danger" Color="#D9534F"/>
+        <SolidColorBrush x:Key="Hover" Color="#E9ECF2"/>
+        <SolidColorBrush x:Key="SwitchOff" Color="#CDD2DC"/>
+        <SolidColorBrush x:Key="SoonBg" Color="#EAECF0"/>
+        <SolidColorBrush x:Key="AccentMid" Color="#B5D2F4"/>
 
-        <!-- ===== الخطوط (IBM Plex Sans Arabic) ===== -->
-        <FontFamily x:Key="HwFont">pack://application:,,,/Fonts/#IBM Plex Sans Arabic</FontFamily>
-        <FontFamily x:Key="HwFontMedium">pack://application:,,,/Fonts/#IBM Plex Sans Arabic Medium</FontFamily>
-        <FontFamily x:Key="HwFontSemi">pack://application:,,,/Fonts/#IBM Plex Sans Arabic SemiBold</FontFamily>
+        <!-- ===== الخطوط: خط ويندوز (بيدعم العربي والإنجليزي) والأيقونات ===== -->
+        <FontFamily x:Key="HwFont">Segoe UI Variable Text, Segoe UI</FontFamily>
+        <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
-        <!-- ===== الكروت ===== -->
+        <!-- ===== الكارت: radius 12، padding 16×14 ===== -->
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource Card}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Line}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="16"/>
-            <Setter Property="Padding" Value="16"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="16,14"/>
         </Style>
 
-        <Style x:Key="SectionLabel" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
-            <Setter Property="FontSize" Value="14"/>
+        <!-- كارت فيه صفوف (padding رأسي أقل) -->
+        <Style x:Key="ListCardStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+            <Setter Property="Padding" Value="16,2"/>
+        </Style>
+
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
-            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
-        <Style x:Key="BodyText" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource HwFont}"/>
-            <Setter Property="FontSize" Value="15"/>
+        <Style x:Key="GroupTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="Margin" Value="4,0,4,-4"/>
+        </Style>
+
+        <Style x:Key="RowTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
 
-        <Style x:Key="HintText" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource HwFont}"/>
-            <Setter Property="FontSize" Value="13"/>
+        <Style x:Key="Hint" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11.5"/>
             <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
 
-        <!-- ===== الأزرار ===== -->
-        <Style x:Key="PrimaryButton" TargetType="Button">
-            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Foreground" Value="White"/>
+        <Style x:Key="StatNumber" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+            <Setter Property="Typography.NumeralAlignment" Value="Tabular"/>
+        </Style>
+
+        <Style x:Key="Divider" TargetType="Border">
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Background" Value="{DynamicResource Line}"/>
+        </Style>
+
+        <!-- صف في قايمة: اسم + وصف على ناحية، وحاجة على الناحية التانية -->
+        <Style x:Key="ListRow" TargetType="Grid">
+            <Setter Property="MinHeight" Value="44"/>
+            <Setter Property="Margin" Value="0,10"/>
+        </Style>
+
+        <!-- ===== الأزرار: عادي / أساسي / شفاف / خطر ===== -->
+        <Style x:Key="BtnBase" TargetType="Button">
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+            <Setter Property="Background" Value="{DynamicResource Card}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Line}"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="18,8"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Background="{DynamicResource Accent}" CornerRadius="12"
-                                Padding="{TemplateBinding Padding}">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Hover}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{DynamicResource Accent}" CornerRadius="8" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -92,25 +146,34 @@
             </Setter>
         </Style>
 
-        <Style x:Key="SoftButton" TargetType="Button">
-            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Foreground" Value="{DynamicResource AccentText}"/>
+        <Style x:Key="BtnGhost" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+
+        <Style x:Key="BtnDanger" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Foreground" Value="{DynamicResource Danger}"/>
+        </Style>
+
+        <!-- زرار أيقونة صغير (طي السايدبار) -->
+        <Style x:Key="IconButton" TargetType="Button">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="18,8"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Background="{DynamicResource AccentSoft}" CornerRadius="12"
-                                Padding="{TemplateBinding Padding}">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="7">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentSoftHover}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.5"/>
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Hover}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -118,41 +181,20 @@
             </Setter>
         </Style>
 
-        <Style x:Key="OutlineButton" TargetType="Button">
-            <Setter Property="FontFamily" Value="{StaticResource HwFontSemi}"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="18,8"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Background="{DynamicResource OutlineBg}" BorderBrush="{DynamicResource OutlineBorder}" BorderThickness="1"
-                                CornerRadius="12" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource OutlineHover}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- ===== Toggle (بديل الـ CheckBox) =====
-             الـ knob على الـ Left = "بداية" الاتجاه، فمع RTL بيظهر يمين لما مقفول وشمال لما شغّال -->
+        <!-- ===== السويتش 38×22 ===== -->
         <Style x:Key="SwitchStyle" TargetType="ToggleButton">
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Border x:Name="track" Width="46" Height="26" CornerRadius="13"
-                                Background="{DynamicResource SwitchOff}">
-                            <Ellipse x:Name="knob" Width="20" Height="20" Fill="White"
-                                     HorizontalAlignment="Left" Margin="3,0,3,0"/>
+                        <Border x:Name="track" Width="38" Height="22" CornerRadius="11" Background="{DynamicResource SwitchOff}">
+                            <Ellipse x:Name="knob" Width="16" Height="16" Fill="White" HorizontalAlignment="Left" Margin="3,0">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect BlurRadius="2" ShadowDepth="1" Opacity="0.25"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
@@ -168,22 +210,127 @@
             </Setter>
         </Style>
 
-        <!-- ===== خانة النص ===== -->
-        <Style x:Key="FieldTextBox" TargetType="TextBox">
-            <Setter Property="FontFamily" Value="{StaticResource HwFont}"/>
+        <!-- ===== اختيار من كذا حاجة (المظهر / اللغة) ===== -->
+        <Style x:Key="SegBox" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Field}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Line}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="SegButton" TargetType="RadioButton">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="6" Padding="10,4">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Card}"/>
+                                <Setter TargetName="bd" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="2" ShadowDepth="1" Opacity="0.12"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== عناصر السايدبار ===== -->
+        <Style x:Key="NavButton" TargetType="RadioButton">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="GroupName" Value="Nav"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="8" Padding="10,8">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Hover}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentSoft}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Icon" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
             <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- ===== لينكات "عن حوّل" ===== -->
+        <Style x:Key="LinkTile" TargetType="Button">
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{DynamicResource Card}" BorderBrush="{DynamicResource Line}"
+                                BorderThickness="1" CornerRadius="9" Padding="12,9">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== خانة "جرّب هنا" ===== -->
+        <Style x:Key="FieldTextBox" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
             <Setter Property="CaretBrush" Value="{DynamicResource Ink}"/>
+            <Setter Property="SelectionBrush" Value="{DynamicResource Accent}"/>
             <Setter Property="Background" Value="{DynamicResource Field}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource FieldBorder}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Line}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Padding" Value="8,7"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Border x:Name="bd" Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="14">
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="9">
                             <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" Focusable="False"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -196,41 +343,69 @@
             </Setter>
         </Style>
 
+        <!-- ===== الكيكابس (دايماً LTR): كل عنصر إما مفتاح أو علامة + ===== -->
+        <DataTemplate x:Key="KeyChip">
+            <Grid>
+                <Border x:Name="chip" MinWidth="34" Height="32" Padding="9,0" CornerRadius="7"
+                        Background="{DynamicResource Key}" BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,3">
+                    <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource Ink}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+                <TextBlock x:Name="plus" Text="+" Visibility="Collapsed" FontSize="12"
+                           Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="6,0"/>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="+">
+                    <Setter TargetName="chip" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="plus" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
 
-        <!-- ===== زرار المظهر: دايرة فيها أيقونة الوضع (شمس / قمر) ===== -->
-        <Style x:Key="CircleButton" TargetType="Button">
-            <Setter Property="Width" Value="40"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Foreground" Value="{DynamicResource AccentText}"/>
-            <!-- Segoe Fluent Icons في ويندوز 11، و Segoe MDL2 Assets في ويندوز 10 -->
-            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/>
-            <Setter Property="FontSize" Value="17"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" CornerRadius="20" Background="{DynamicResource Card}"
-                                BorderBrush="{DynamicResource CardBorder}" BorderThickness="1">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentSoft}"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource AccentSoftHover}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <DataTemplate x:Key="KeyChipLarge">
+            <Grid>
+                <Border x:Name="chip" MinWidth="44" Height="42" Padding="9,0" CornerRadius="9"
+                        Background="{DynamicResource Key}" BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,3">
+                    <TextBlock Text="{Binding}" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource Ink}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+                <TextBlock x:Name="plus" Text="+" Visibility="Collapsed" FontSize="12"
+                           Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="6,0"/>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="+">
+                    <Setter TargetName="chip" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="plus" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate x:Key="KeyChipSmall">
+            <Grid>
+                <Border x:Name="chip" MinWidth="24" Height="22" Padding="6,0" CornerRadius="5"
+                        Background="{DynamicResource Key}" BorderBrush="{DynamicResource Line}" BorderThickness="1,1,1,2">
+                    <TextBlock Text="{Binding}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Ink}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+                <TextBlock x:Name="plus" Text="+" Visibility="Collapsed" FontSize="11"
+                           Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="5,0"/>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="+">
+                    <Setter TargetName="chip" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="plus" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="HorizontalPanel">
+            <StackPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
 
         <Style x:Key="HwProgress" TargetType="ProgressBar">
             <Setter Property="Height" Value="6"/>
             <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
-            <Setter Property="Background" Value="{DynamicResource ProgressTrack}"/>
+            <Setter Property="Background" Value="{DynamicResource Field}"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
     </Application.Resources>

@@ -11,6 +11,12 @@ public partial class App : Application
 
     public Settings Settings { get; private set; } = null!;
     public Engine Engine { get; private set; } = null!;
+    public Stats Stats { get; private set; } = null!;
+    /// <summary>الاختصار متسجّل؟ (false لو برنامج تاني واخده)</summary>
+    public bool HotkeyOk { get; private set; }
+    public event Action? HotkeyChanged;
+    /// <summary>الـ installer لو اتنزّل في الخلفية (نزّل وثبّت تلقائياً)</summary>
+    public string? DownloadedInstaller { get; private set; }
     public bool Quitting { get; private set; }
 
     private HotkeyService _hotkey = null!;
@@ -47,13 +53,19 @@ public partial class App : Application
         }) { IsBackground = true }.Start();
 
         Settings = Settings.Load();
+        if (string.IsNullOrEmpty(Settings.Language))
+        {
+            Settings.Language = Loc.DefaultLanguage(Settings.HasLaunchedBefore);
+            Settings.Save();
+        }
+        Loc.I.Lang = Settings.Language;
         Theme.Init(Settings); // لازم قبل ما النافذة تتعمل
-        Engine = new Engine();
+        Stats = Stats.Load();
+        Engine = new Engine(Stats, Settings);
 
         _hotkey = new HotkeyService();
         _hotkey.Pressed += Engine.Run;
-        if (!_hotkey.Register(Settings.HotkeyModifiers, Settings.HotkeyVk))
-            Engine.Status = "⚠️ الاختصار مشغول من برنامج تاني، غيّره من هنا";
+        HotkeyOk = _hotkey.Register(Settings.HotkeyModifiers, Settings.HotkeyVk);
 
         BuildTray();
         _window = new MainWindow();
@@ -98,9 +110,23 @@ public partial class App : Application
         try
         {
             var info = await Updater.CheckAsync();
+            Settings.LastUpdateCheck = DateTime.Now;
+            Settings.Save();
+            if (info?.Version != PendingUpdate?.Version) DownloadedInstaller = null;
             PendingUpdate = info;
             UpdateChanged?.Invoke();
             if (info == null) return UpdateCheckResult.UpToDate;
+
+            // نزّل وثبّت تلقائياً: بننزّله في الخلفية، والمستخدم يختار امتى يعيد التشغيل
+            if (Settings.AutoInstallUpdates && DownloadedInstaller == null)
+            {
+                try
+                {
+                    DownloadedInstaller = await Updater.DownloadAsync(info);
+                    UpdateChanged?.Invoke();
+                }
+                catch { /* هيتنزّل لما يدوس "حدّث دلوقتي" */ }
+            }
 
             // إشعار مرة واحدة بس لكل إصدار (إلا لو المستخدم هو اللي طلب الفحص)
             var v = info.Version.ToString();
@@ -109,7 +135,7 @@ public partial class App : Application
                 Settings.LastNotifiedUpdate = v;
                 Settings.Save();
                 if (Settings.ShowTray)
-                    _tray.ShowBalloonTip(10000, "Hawwel", $"إصدار جديد ({v}) متاح. افتح Hawwel واضغط تحديث.", Forms.ToolTipIcon.Info);
+                    _tray.ShowBalloonTip(10000, "Hawwel", Loc.F("tray.balloon", v), Forms.ToolTipIcon.Info);
             }
             return UpdateCheckResult.Available;
         }
@@ -128,40 +154,71 @@ public partial class App : Application
             Settings.HotkeyModifiers = modifiers;
             Settings.HotkeyVk = vk;
             Settings.Save();
+            SetHotkeyOk(true);
             return true;
         }
-        _hotkey.Register(Settings.HotkeyModifiers, Settings.HotkeyVk); // نرجّع القديم
+        SetHotkeyOk(_hotkey.Register(Settings.HotkeyModifiers, Settings.HotkeyVk)); // نرجّع القديم
         return false;
     }
 
     public void PauseHotkey() => _hotkey.Unregister();
-    public void ResumeHotkey() => _hotkey.Register(Settings.HotkeyModifiers, Settings.HotkeyVk);
+    public void ResumeHotkey() => SetHotkeyOk(_hotkey.Register(Settings.HotkeyModifiers, Settings.HotkeyVk));
+
+    private void SetHotkeyOk(bool ok)
+    {
+        if (ok == HotkeyOk) return;
+        HotkeyOk = ok;
+        HotkeyChanged?.Invoke();
+    }
+
+    /// <summary>بعد "رجّع كل الإعدادات"</summary>
+    public void ApplySettingsAfterReset()
+    {
+        SetHotkeyOk(_hotkey.Register(Settings.HotkeyModifiers, Settings.HotkeyVk));
+        SetTrayVisible(Settings.ShowTray);
+    }
 
     // ---- System Tray (بديل MenuBarExtra) ----
 
     private void BuildTray()
     {
-        var menu = new Forms.ContextMenuStrip { RightToLeft = Forms.RightToLeft.Yes };
-        menu.Items.Add("حوّل النص المحدد", null, async (_, _) =>
+        var iconStream = GetResourceStream(new Uri("pack://application:,,,/Assets/tray.ico")).Stream;
+        // لوجو Hawwel المختصر (ح + P) بالأزرق؛ الملف فيه كذا مقاس، ونختار المقاس اللي الـ tray محتاجه
+        _tray = new Forms.NotifyIcon
+        {
+            Icon = new Icon(iconStream, Forms.SystemInformation.SmallIconSize),
+            Visible = Settings.ShowTray
+        };
+        BuildTrayMenu();
+        Loc.I.LanguageChanged += BuildTrayMenu;
+        _tray.BalloonTipClicked += (_, _) => ShowWindow();
+        _tray.MouseClick += (_, ev) => { if (ev.Button == Forms.MouseButtons.Left) ShowWindow(); };
+    }
+
+    /// <summary>منيو الـ tray بلغة الواجهة</summary>
+    private void BuildTrayMenu()
+    {
+        var menu = new Forms.ContextMenuStrip
+        {
+            RightToLeft = Loc.I.IsArabic ? Forms.RightToLeft.Yes : Forms.RightToLeft.No
+        };
+        menu.Items.Add(Loc.T("menu.convert"), null, async (_, _) =>
         {
             await Task.Delay(350); // نسيب الفوكس يرجع للبرنامج اللي كنت فيه
             Engine.Run();
         });
-        menu.Items.Add("فتح Hawwel", null, (_, _) => ShowWindow());
-        menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add("خروج", null, (_, _) => Quit());
-
-        // لوجو Hawwel المختصر (ح + P) بالأزرق؛ الملف فيه كذا مقاس، ونختار المقاس اللي الـ tray محتاجه
-        var iconStream = GetResourceStream(new Uri("pack://application:,,,/Assets/tray.ico")).Stream;
-        _tray = new Forms.NotifyIcon
+        menu.Items.Add(Loc.T("menu.open"), null, (_, _) => ShowWindow());
+        menu.Items.Add(Loc.T("menu.update"), null, async (_, _) =>
         {
-            Icon = new Icon(iconStream, Forms.SystemInformation.SmallIconSize),
-            Text = "Hawwel - حوّل",
-            ContextMenuStrip = menu,
-            Visible = Settings.ShowTray
-        };
-        _tray.BalloonTipClicked += (_, _) => ShowWindow();
-        _tray.MouseClick += (_, ev) => { if (ev.Button == Forms.MouseButtons.Left) ShowWindow(); };
+            ShowWindow();
+            await CheckForUpdateAsync(userInitiated: true);
+        });
+        menu.Items.Add(new Forms.ToolStripSeparator());
+        menu.Items.Add(Loc.T("menu.quit"), null, (_, _) => Quit());
+        var old = _tray.ContextMenuStrip;
+        _tray.ContextMenuStrip = menu;
+        old?.Dispose();
+        _tray.Text = Loc.T("tray.tooltip");
     }
 
     public void SetTrayVisible(bool visible)

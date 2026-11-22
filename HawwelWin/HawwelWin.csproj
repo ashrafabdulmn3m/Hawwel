@@ -27,8 +27,8 @@
     <Resource Include="Assets\hawwel.ico" />
     <Resource Include="Assets\tray.ico" />
     <Resource Include="Assets\*.png" />
-    <Resource Include="Fonts\*.ttf" />
-    <None Include="Fonts\OFL-LICENSE.txt" />
+    <EmbeddedResource Include="Strings.json" LogicalName="Hawwel.Strings.json" />
+    <EmbeddedResource Include="Assets\convert-sound.wav" LogicalName="Hawwel.Assets.convert-sound.wav" />
   </ItemGroup>
 
 </Project>

@@ -20,6 +20,16 @@ internal static class Native
     [DllImport("user32.dll")] public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
     [DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);
     [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+    public const uint WM_INPUTLANGCHANGEREQUEST = 0x0050;
+
+    /// <summary>بيغيّر لغة الكيبورد للبرنامج اللي قدام</summary>
+    public static void SwitchLayout(IntPtr hkl)
+    {
+        if (hkl == IntPtr.Zero) return;
+        var hwnd = GetForegroundWindow();
+        if (hwnd != IntPtr.Zero) PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, IntPtr.Zero, hkl);
+    }
     [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
     [DllImport("user32.dll")] public static extern uint GetClipboardSequenceNumber();
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern IntPtr LoadKeyboardLayout(string klid, uint flags);

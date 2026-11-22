@@ -1,191 +1,681 @@
 <Window x:Class="Hawwel.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Hawwel - حوّل" Width="480" SizeToContent="Height"
-        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
-        FlowDirection="RightToLeft" FontFamily="{StaticResource HwFont}" FontSize="16"
-        Background="{DynamicResource Bg}" UseLayoutRounding="True"
-        PreviewKeyDown="Window_PreviewKeyDown"
+        xmlns:h="clr-namespace:Hawwel"
+        Title="Hawwel - حوّل" Width="796" Height="600" MinWidth="676" MinHeight="500"
+        ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
+        FlowDirection="{Binding FlowDirection, Source={x:Static h:Loc.I}}"
+        FontFamily="{StaticResource HwFont}" FontSize="13"
+        Foreground="{DynamicResource Ink}" Background="{DynamicResource Bg}"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp"
         Icon="pack://application:,,,/Assets/hawwel.ico">
 
     <Window.Resources>
-        <!-- مفتاح الاختصار: كل عنصر إما "كابسة" أو علامة + -->
-        <DataTemplate x:Key="KeyChipTemplate">
-            <Grid>
-                <Border x:Name="chip" MinWidth="42" Height="34" Padding="12,0" CornerRadius="10"
-                        Background="{DynamicResource ChipBg}" BorderBrush="{DynamicResource ChipBorder}" BorderThickness="1,1,1,3">
-                    <TextBlock Text="{Binding}" FontFamily="{StaticResource HwFontSemi}" FontSize="16"
-                               Foreground="{DynamicResource Ink}" VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
-                </Border>
-                <TextBlock x:Name="plus" Text="+" Visibility="Collapsed" FontSize="18"
-                           Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="8,0"/>
-            </Grid>
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding}" Value="+">
-                    <Setter TargetName="chip" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="plus" Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
+        <!-- السوشيال: أيقونة 16 في زرار 28 -->
+        <Style x:Key="SocialButton" TargetType="Button">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="FlowDirection" Value="LeftToRight"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Hover}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="22,16,22,18">
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="44"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="SideCol" Width="196"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <!-- الرأس -->
-            <Grid Margin="0,0,0,14">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Border Width="48" Height="48" CornerRadius="14" Background="White">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.12" Color="#1E3A8A"/>
-                    </Border.Effect>
-                    <Image x:Name="LogoImage" Margin="4" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <!-- ================= السايدبار ================= -->
+        <Border Grid.Column="0" Background="{DynamicResource Side}" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,1,0">
+            <DockPanel x:Name="SidePanel" Margin="12,16,12,14" LastChildFill="False">
+                <!-- اللوجو والاسم وزرار الطي -->
+                <Grid x:Name="Brand" DockPanel.Dock="Top" Margin="4,0,4,18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Border x:Name="LogoBox" Width="40" Height="40" CornerRadius="10" Background="White"
+                            BorderBrush="{DynamicResource Line}" BorderThickness="1">
+                        <Image x:Name="LogoImage" Margin="3" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Border>
+                    <StackPanel x:Name="BrandText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{h:L app.name}" FontSize="15" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="SideVersion" FontSize="11" Foreground="{DynamicResource Muted}" FlowDirection="LeftToRight"
+                                   HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <Button x:Name="SideToggle" Grid.Column="2" Style="{StaticResource IconButton}" Click="SideToggle_Click"/>
+                </Grid>
+
+                <!-- التابات -->
+                <StackPanel x:Name="Nav" DockPanel.Dock="Top">
+                    <RadioButton x:Name="NavHome" Style="{StaticResource NavButton}" Tag="home" Checked="Nav_Checked" IsChecked="True">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icon}" Text="&#xE80F;" Width="18"/>
+                            <TextBlock x:Name="NavHomeText" Text="{h:L tab.home}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="NavShortcuts" Style="{StaticResource NavButton}" Tag="shortcuts" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icon}" Text="&#xE765;" Width="18"/>
+                            <TextBlock x:Name="NavShortcutsText" Text="{h:L tab.shortcuts}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="NavActivity" Style="{StaticResource NavButton}" Tag="activity" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icon}" Text="&#xE9D2;" Width="18"/>
+                            <TextBlock x:Name="NavActivityText" Text="{h:L tab.activity}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="NavSettings" Style="{StaticResource NavButton}" Tag="settings" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icon}" Text="&#xE713;" Width="18"/>
+                            <TextBlock x:Name="NavSettingsText" Text="{h:L tab.settings}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="NavAbout" Style="{StaticResource NavButton}" Tag="about" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icon}" Text="&#xE946;" Width="18"/>
+                            <TextBlock x:Name="NavAboutText" Text="{h:L tab.about}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+
+                <!-- حالة البرنامج تحت -->
+                <Border x:Name="StateBadge" DockPanel.Dock="Bottom" CornerRadius="8" Padding="10,8">
+                    <StackPanel Orientation="Horizontal" x:Name="StateRow">
+                        <Ellipse x:Name="StateDot" Width="7" Height="7" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="StateText" Margin="8,0,0,0" FontSize="12" FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
                 </Border>
-                <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="Hawwel - حوّل" FontFamily="{StaticResource HwFont}" FontWeight="Bold"
-                               FontSize="24" Foreground="{DynamicResource Ink}"/>
-                    <TextBlock Text="حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار"
-                               Style="{StaticResource HintText}" FontSize="14" Margin="0,2,0,0"/>
-                </StackPanel>
-                <!-- زرار المظهر: كل ضغطة بتبدّل بين النهاري والليلي -->
-                <Button x:Name="ThemeToggle" Grid.Column="2" Style="{StaticResource CircleButton}"
-                        VerticalAlignment="Center" Margin="12,0,0,0" Click="ThemeToggle_Click"/>
-            </Grid>
+            </DockPanel>
+        </Border>
 
-            <!-- كارت التحديث (بيظهر بس لو فيه إصدار جديد) -->
-            <Border x:Name="UpdateCard" Style="{StaticResource CardStyle}"
-                    Background="{DynamicResource UpdateBg}" BorderBrush="{DynamicResource UpdateBorder}" Visibility="Collapsed">
-                <StackPanel>
-                    <TextBlock x:Name="UpdateTitle" FontFamily="{StaticResource HwFontSemi}" FontSize="16"
-                               Foreground="{DynamicResource Ink}" TextWrapping="Wrap"/>
-                    <TextBlock x:Name="UpdateMsg" Style="{StaticResource HintText}" Margin="0,4,0,12"/>
-                    <ProgressBar x:Name="UpdateProgress" Style="{StaticResource HwProgress}"
-                                 Minimum="0" Maximum="100" Margin="0,0,0,12" Visibility="Collapsed"/>
-                    <Button x:Name="UpdateBtn" Content="حدّث دلوقتي" Style="{StaticResource PrimaryButton}"
-                            HorizontalAlignment="Left" Click="Update_Click"/>
-                </StackPanel>
-            </Border>
+        <!-- ================= المحتوى ================= -->
+        <DockPanel Grid.Column="1">
+            <StackPanel DockPanel.Dock="Top" Margin="22,16,22,10">
+                <TextBlock x:Name="HeaderTitle" FontSize="18" FontWeight="Bold"/>
+                <TextBlock x:Name="HeaderSub" FontSize="12" Foreground="{DynamicResource Muted}"/>
+            </StackPanel>
 
-            <!-- الاختصار -->
-            <Border Style="{StaticResource CardStyle}">
-                <StackPanel>
-                    <TextBlock Text="الاختصار" Style="{StaticResource SectionLabel}"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <ItemsControl x:Name="HotkeyKeys" Grid.Column="0" FlowDirection="LeftToRight"
-                                      VerticalAlignment="Center" ItemTemplate="{StaticResource KeyChipTemplate}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                        <Button x:Name="RecordBtn" Grid.Column="2" Content="غيّر الاختصار"
-                                Style="{StaticResource SoftButton}" Click="Record_Click"/>
-                    </Grid>
-                    <TextBlock x:Name="HotkeyMsg" Style="{StaticResource HintText}" Margin="0,12,0,0"
-                               Visibility="Collapsed"/>
-                </StackPanel>
-            </Border>
+            <ScrollViewer x:Name="BodyScroll" VerticalScrollBarVisibility="Auto" Focusable="False">
+                <Grid Margin="22,4,22,18">
 
-            <!-- جرّب هنا -->
-            <Border Style="{StaticResource CardStyle}">
-                <StackPanel>
-                    <TextBlock Text="جرّب هنا" Style="{StaticResource SectionLabel}"/>
-                    <Grid>
-                        <TextBox x:Name="TestBox" Style="{StaticResource FieldTextBox}" Height="72"
-                                 AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"
-                                 VerticalScrollBarVisibility="Auto" TextChanged="TestBox_TextChanged"/>
-                        <TextBlock x:Name="TestPlaceholder" Text="مثال: اكتب بالكيبورد الغلط hghgl"
-                                   IsHitTestVisible="False" Foreground="{DynamicResource Placeholder}"
-                                   FontSize="16" Margin="15,13,15,0" VerticalAlignment="Top"/>
-                    </Grid>
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="اكتب بالكيبورد الغلط، حدده، واضغط الاختصار"
-                                   Style="{StaticResource HintText}" FontSize="14" VerticalAlignment="Center"
-                                   Margin="0,0,12,0"/>
-                        <Border x:Name="StatusPill" Grid.Column="1" CornerRadius="16" Padding="14,6"
-                                Background="#E2F3E7" VerticalAlignment="Center" MaxWidth="230">
-                            <StackPanel Orientation="Horizontal">
-                                <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="#2EA44F"
-                                         VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock x:Name="StatusText" Text="جاهز" FontFamily="{StaticResource HwFontSemi}"
-                                           FontSize="14" Foreground="#1B7F3B" TextTrimming="CharacterEllipsis"/>
+                    <!-- ========== الرئيسية ========== -->
+                    <StackPanel x:Name="HomeTab">
+                        <!-- حالة البرنامج والاختصار -->
+                        <Border x:Name="HeroCard" Style="{StaticResource CardStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock x:Name="HeroTitle" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="HeroDesc" Style="{StaticResource Hint}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                                <ItemsControl x:Name="HeroKeys" Grid.Column="1" FlowDirection="LeftToRight" VerticalAlignment="Center"
+                                              ItemTemplate="{StaticResource KeyChipLarge}" ItemsPanel="{StaticResource HorizontalPanel}"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- جرّب هنا -->
+                        <Border Style="{StaticResource CardStyle}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="{h:L try.reset}" Style="{StaticResource BtnGhost}"
+                                            Margin="0,-4" Click="TryReset_Click"/>
+                                    <TextBlock Text="{h:L try.title}" Style="{StaticResource CardTitle}"/>
+                                </DockPanel>
+                                <WrapPanel Margin="0,10,0,10">
+                                    <Border x:Name="Step1" CornerRadius="99" Padding="3,2,10,2" Margin="0,0,6,0" BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border x:Name="Step1Num" Width="18" Height="18" CornerRadius="9" BorderThickness="1">
+                                                <TextBlock x:Name="Step1NumText" Text="1" FontSize="10.5" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock x:Name="Step1Text" Text="{h:L try.step1}" FontSize="11.5" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border x:Name="Step2" CornerRadius="99" Padding="3,2,10,2" Margin="0,0,6,0" BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border x:Name="Step2Num" Width="18" Height="18" CornerRadius="9" BorderThickness="1">
+                                                <TextBlock x:Name="Step2NumText" Text="2" FontSize="10.5" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock x:Name="Step2Text" Text="{h:L try.step2}" FontSize="11.5" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border x:Name="Step3" CornerRadius="99" Padding="3,2,10,2" BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border x:Name="Step3Num" Width="18" Height="18" CornerRadius="9" BorderThickness="1">
+                                                <TextBlock x:Name="Step3NumText" Text="3" FontSize="10.5" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock x:Name="Step3Text" Text="{h:L try.step3}" FontSize="11.5" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </WrapPanel>
+                                <Grid>
+                                    <TextBox x:Name="TestBox" Style="{StaticResource FieldTextBox}" Height="70"
+                                             AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"
+                                             VerticalScrollBarVisibility="Auto"
+                                             TextChanged="TestBox_TextChanged" SelectionChanged="TestBox_SelectionChanged"/>
+                                    <TextBlock x:Name="TestPlaceholder" Text="{h:L try.placeholder}" IsHitTestVisible="False"
+                                               Foreground="{DynamicResource Muted}" Opacity="0.8" FontSize="14" Margin="12,8,12,0"
+                                               VerticalAlignment="Top" Visibility="Collapsed"/>
+                                </Grid>
+                                <DockPanel Margin="0,10,0,0">
+                                    <Border x:Name="TryPill" DockPanel.Dock="Right" CornerRadius="99" Padding="10,3" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Ellipse x:Name="TryDot" Width="7" Height="7" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="TryState" Margin="6,0,0,0" FontSize="11.5" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <ItemsControl x:Name="TryKeys" FlowDirection="LeftToRight" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  ItemTemplate="{StaticResource KeyChipSmall}" ItemsPanel="{StaticResource HorizontalPanel}"/>
+                                </DockPanel>
                             </StackPanel>
                         </Border>
-                    </Grid>
-                </StackPanel>
-            </Border>
 
-            <!-- الإعدادات -->
-            <Border Style="{StaticResource CardStyle}" Padding="16,2" Margin="0,0,0,14">
-                <StackPanel>
-                    <Grid MinHeight="48">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="شغّل Hawwel مع بداية الجهاز" Style="{StaticResource BodyText}"
-                                   VerticalAlignment="Center"/>
-                        <ToggleButton x:Name="LaunchCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}"
-                                      Click="Launch_Click"/>
-                    </Grid>
-                    <Border Height="1" Background="{DynamicResource Divider}"/>
-                    <Grid MinHeight="48">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="أظهر Hawwel في الـ System Tray" Style="{StaticResource BodyText}"
-                                   VerticalAlignment="Center"/>
-                        <ToggleButton x:Name="TrayCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}"
-                                      Click="Tray_Click"/>
-                    </Grid>
-                    <Border Height="1" Background="{DynamicResource Divider}"/>
-                    <Grid MinHeight="48">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel VerticalAlignment="Center" Margin="0,6">
-                            <TextBlock Text="دوّر على التحديثات تلقائياً" Style="{StaticResource BodyText}"/>
-                            <TextBlock Text="بيتصل بـ GitHub بس" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
-                        </StackPanel>
-                        <ToggleButton x:Name="AutoUpdateCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}"
-                                      Click="AutoUpdate_Click"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
+                        <!-- الكيبوردات + النهارده -->
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="KbCard" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <Border x:Name="KbPill" DockPanel.Dock="Right" CornerRadius="99" Padding="10,3">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse x:Name="KbDot" Width="7" Height="7" VerticalAlignment="Center"/>
+                                                <TextBlock x:Name="KbState" Margin="6,0,0,0" FontSize="11.5" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <TextBlock Text="{h:L home.kb.title}" Style="{StaticResource CardTitle}"/>
+                                    </DockPanel>
+                                    <TextBlock x:Name="KbDesc" Style="{StaticResource Hint}" Margin="0,6,0,0"/>
+                                    <Button x:Name="KbOpen" Content="{h:L home.kb.open}" Style="{StaticResource BtnPrimary}"
+                                            HorizontalAlignment="Left" Margin="0,10,0,0" Click="KbOpen_Click"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right" Content="{h:L home.toActivity}" Style="{StaticResource BtnGhost}"
+                                                Margin="0,-4" Click="ToActivity_Click"/>
+                                        <TextBlock Text="{h:L home.today}" Style="{StaticResource CardTitle}"/>
+                                    </DockPanel>
+                                    <UniformGrid Columns="3" Margin="0,6,0,0">
+                                        <StackPanel>
+                                            <TextBlock x:Name="TodayConv" Style="{StaticResource StatNumber}"/>
+                                            <TextBlock Text="{h:L home.today.conv}" Style="{StaticResource Hint}"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock x:Name="TodayChars" Style="{StaticResource StatNumber}"/>
+                                            <TextBlock Text="{h:L home.today.chars}" Style="{StaticResource Hint}"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock x:Name="TodaySaved" Style="{StaticResource StatNumber}"/>
+                                            <TextBlock Text="{h:L home.today.saved}" Style="{StaticResource Hint}"/>
+                                        </StackPanel>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
 
-            <!-- الأزرار السفلية -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Name="VersionText" Grid.Column="0" VerticalAlignment="Center"
-                           Style="{StaticResource HintText}" FontSize="16" FlowDirection="LeftToRight"/>
-                <Button Grid.Column="2" Content="خروج من Hawwel" Style="{StaticResource OutlineButton}"
-                        Margin="0,0,12,0" Click="Quit_Click"/>
-                <Button x:Name="CheckBtn" Grid.Column="3" Content="دوّر على تحديث"
-                        Style="{StaticResource PrimaryButton}" Click="Check_Click"/>
-            </Grid>
-            <TextBlock x:Name="CheckMsg" Style="{StaticResource HintText}" Margin="0,6,0,0"/>
-        </StackPanel>
-    </ScrollViewer>
+                        <!-- التحديث (بيظهر بس لو فيه إصدار جديد) -->
+                        <Border x:Name="UpdateCard" Style="{StaticResource CardStyle}" Background="{DynamicResource AccentSoft}"
+                                BorderThickness="0" Margin="0,12,0,0" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock x:Name="UpdateTitle" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="UpdateMsg" Style="{StaticResource Hint}"/>
+                                    <ProgressBar x:Name="UpdateProgress" Style="{StaticResource HwProgress}" Minimum="0" Maximum="100"
+                                                 Margin="0,8,0,0" Visibility="Collapsed"/>
+                                </StackPanel>
+                                <Button x:Name="UpdateBtn" Grid.Column="1" Style="{StaticResource BtnPrimary}" Click="Update_Click"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ========== الاختصارات ========== -->
+                    <StackPanel x:Name="ShortcutsTab" Visibility="Collapsed">
+                        <!-- عادي -->
+                        <Border x:Name="ScIdleCard" Style="{StaticResource CardStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                    <TextBlock Text="{h:L sc.flip.title}" Style="{StaticResource RowTitle}"/>
+                                    <TextBlock Text="{h:L sc.flip.desc}" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ItemsControl x:Name="ScKeys" FlowDirection="LeftToRight" VerticalAlignment="Center"
+                                                  ItemTemplate="{StaticResource KeyChip}" ItemsPanel="{StaticResource HorizontalPanel}"/>
+                                    <Button Content="{h:L sc.change}" Style="{StaticResource BtnBase}" Margin="8,0,0,0" Click="Record_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- بيسجّل -->
+                        <Grid x:Name="ScRecCard" Visibility="Collapsed">
+                            <Rectangle RadiusX="12" RadiusY="12" Fill="{DynamicResource AccentSoft}" Stroke="{DynamicResource Accent}"
+                                       StrokeThickness="1.5" StrokeDashArray="3,2.5"/>
+                            <Grid Margin="16,14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                    <TextBlock Text="{h:L sc.rec.title}" FontSize="13" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="ScRecDesc" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                                <ItemsControl x:Name="ScLiveKeys" Grid.Column="1" FlowDirection="LeftToRight" VerticalAlignment="Center"
+                                              ItemTemplate="{StaticResource KeyChip}" ItemsPanel="{StaticResource HorizontalPanel}"/>
+                                <Button Grid.Column="2" Content="{h:L common.cancel}" Style="{StaticResource BtnGhost}" Margin="8,0,0,0"
+                                        Click="RecordCancel_Click"/>
+                            </Grid>
+                        </Grid>
+
+                        <!-- تعارض -->
+                        <Border x:Name="ScConflictCard" Style="{StaticResource CardStyle}" Margin="0,12,0,0" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <ItemsControl x:Name="ScConflictKeys" FlowDirection="LeftToRight" HorizontalAlignment="Left"
+                                                  ItemTemplate="{StaticResource KeyChipSmall}" ItemsPanel="{StaticResource HorizontalPanel}"/>
+                                    <TextBlock Text="{h:L sc.conflict.desc}" Style="{StaticResource Hint}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{DynamicResource WarnSoft}" CornerRadius="99" Padding="10,3" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="7" Height="7" Fill="{DynamicResource Warn}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{h:L sc.conflict}" Margin="6,0,0,0" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Warn}"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- الميزات الجاية -->
+                        <Border Style="{StaticResource CardStyle}" Margin="0,12,0,0" Opacity="0.6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{h:L sc.soon.title}" Style="{StaticResource RowTitle}"/>
+                                    <TextBlock Text="{h:L sc.soon.desc}" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{DynamicResource SoonBg}" CornerRadius="99" Padding="10,3" VerticalAlignment="Center">
+                                    <TextBlock Text="{h:L sc.soon}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Muted}"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <DockPanel Margin="0,12,0,0">
+                            <Button DockPanel.Dock="Right" Content="{h:L sc.resetDefault}" Style="{StaticResource BtnGhost}" Click="ResetShortcut_Click"/>
+                            <TextBlock Text="{h:L sc.foot}" Style="{StaticResource Hint}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </StackPanel>
+
+                    <!-- ========== النشاط ========== -->
+                    <StackPanel x:Name="ActivityTab" Visibility="Collapsed">
+                        <UniformGrid x:Name="StatGrid" Columns="4">
+                            <Border Style="{StaticResource CardStyle}" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock x:Name="StatTotal" Style="{StaticResource StatNumber}"/>
+                                    <TextBlock Text="{h:L act.total}" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}" Margin="6,0">
+                                <StackPanel>
+                                    <TextBlock x:Name="StatWeek" Style="{StaticResource StatNumber}"/>
+                                    <TextBlock Text="{h:L act.week}" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}" Margin="6,0">
+                                <StackPanel>
+                                    <TextBlock x:Name="StatChars" Style="{StaticResource StatNumber}"/>
+                                    <TextBlock Text="{h:L act.chars}" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock x:Name="StatTime" Style="{StaticResource StatNumber}"/>
+                                    <TextBlock Text="{h:L act.time}" Style="{StaticResource Hint}"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Border Style="{StaticResource CardStyle}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <TextBlock Text="{h:L act.last7}" Style="{StaticResource CardTitle}"/>
+                                <Grid x:Name="Chart" Height="110" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="{h:L act.dir}" Style="{StaticResource CardTitle}"/>
+                                    <Border CornerRadius="4" Height="8" Margin="0,10,0,10" Background="{DynamicResource Field}" ClipToBounds="True">
+                                        <Grid x:Name="DirBar">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition x:Name="DirA" Width="0*"/>
+                                                <ColumnDefinition x:Name="DirB" Width="0*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="{DynamicResource Accent}"/>
+                                            <Border Grid.Column="1" Background="{DynamicResource AccentMid}"/>
+                                        </Grid>
+                                    </Border>
+                                    <DockPanel Margin="0,0,0,4">
+                                        <TextBlock x:Name="DirToArValue" DockPanel.Dock="Right" FontWeight="SemiBold" FontSize="12"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Ellipse Width="8" Height="8" Fill="{DynamicResource Accent}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{h:L act.dir.toArabic}" FontSize="12" Margin="8,0,0,0"/>
+                                        </StackPanel>
+                                    </DockPanel>
+                                    <DockPanel>
+                                        <TextBlock x:Name="DirToEnValue" DockPanel.Dock="Right" FontWeight="SemiBold" FontSize="12"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentMid}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{h:L act.dir.toEnglish}" FontSize="12" Margin="8,0,0,0"/>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="{h:L act.apps}" Style="{StaticResource CardTitle}"/>
+                                    <StackPanel x:Name="AppsList" Margin="0,8,0,0"/>
+                                    <TextBlock x:Name="AppsEmpty" Text="{h:L act.apps.empty}" Style="{StaticResource Hint}" Margin="0,8,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <DockPanel Margin="0,12,0,0">
+                            <Button x:Name="ClearBtn" DockPanel.Dock="Right" Content="{h:L act.clear}" Style="{StaticResource BtnDanger}" Click="ClearStats_Click"/>
+                            <TextBlock Text="{h:L act.foot}" Style="{StaticResource Hint}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        </DockPanel>
+                    </StackPanel>
+
+                    <!-- ========== الإعدادات ========== -->
+                    <StackPanel x:Name="SettingsTab" Visibility="Collapsed">
+                        <TextBlock Text="{h:L set.general}" Style="{StaticResource GroupTitle}"/>
+                        <Border Style="{StaticResource ListCardStyle}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="{h:L set.login}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock x:Name="LoginError" Text="{h:L set.login.error}" Style="{StaticResource Hint}"
+                                                   Foreground="{DynamicResource Warn}" Visibility="Collapsed"/>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="LaunchCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}" Click="Launch_Click"/>
+                                </Grid>
+                                <Border Style="{StaticResource Divider}"/>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="{h:L set.menubar}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock Text="{h:L set.menubar.desc}" Style="{StaticResource Hint}"/>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="TrayCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}" Click="Tray_Click"/>
+                                </Grid>
+                                <Border Style="{StaticResource Divider}"/>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{h:L set.appearance}" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="1" Style="{StaticResource SegBox}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <RadioButton x:Name="ThemeLight" GroupName="Theme" Tag="light" Style="{StaticResource SegButton}" Click="Theme_Click">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Style="{StaticResource Icon}" FontSize="12" Text="&#xE706;"/>
+                                                    <TextBlock Text="{h:L set.appearance.light}" Margin="5,0,0,0"/>
+                                                </StackPanel>
+                                            </RadioButton>
+                                            <RadioButton x:Name="ThemeDark" GroupName="Theme" Tag="dark" Style="{StaticResource SegButton}" Click="Theme_Click">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Style="{StaticResource Icon}" FontSize="12" Text="&#xE708;"/>
+                                                    <TextBlock Text="{h:L set.appearance.dark}" Margin="5,0,0,0"/>
+                                                </StackPanel>
+                                            </RadioButton>
+                                            <RadioButton x:Name="ThemeSystem" GroupName="Theme" Tag="system" Style="{StaticResource SegButton}" Click="Theme_Click">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Style="{StaticResource Icon}" FontSize="12" Text="&#xE7F4;"/>
+                                                    <TextBlock Text="{h:L set.appearance.system}" Margin="5,0,0,0"/>
+                                                </StackPanel>
+                                            </RadioButton>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                                <Border Style="{StaticResource Divider}"/>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{h:L set.language}" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="1" Style="{StaticResource SegBox}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <RadioButton x:Name="LangAr" GroupName="Lang" Tag="ar" Content="عربي" Style="{StaticResource SegButton}" Click="Lang_Click"/>
+                                            <RadioButton x:Name="LangEn" GroupName="Lang" Tag="en" Content="English" Style="{StaticResource SegButton}" Click="Lang_Click"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="{h:L set.conversion}" Style="{StaticResource GroupTitle}" Margin="4,12,4,-4"/>
+                        <Border Style="{StaticResource ListCardStyle}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="{h:L set.sound}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock Text="{h:L set.sound.desc}" Style="{StaticResource Hint}"/>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="SoundCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}" Click="Sound_Click"/>
+                                </Grid>
+                                <Border Style="{StaticResource Divider}"/>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="{h:L set.switchKb}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock Text="{h:L set.switchKb.desc}" Style="{StaticResource Hint}"/>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="SwitchKbCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}" Click="SwitchKb_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="{h:L set.updates}" Style="{StaticResource GroupTitle}" Margin="4,12,4,-4"/>
+                        <Border Style="{StaticResource ListCardStyle}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="{h:L set.check}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock x:Name="CheckDetail" Style="{StaticResource Hint}"/>
+                                    </StackPanel>
+                                    <Button x:Name="CheckBtn" Grid.Column="1" Content="{h:L set.check.now}" Style="{StaticResource BtnPrimary}" Click="Check_Click"/>
+                                </Grid>
+                                <Border Style="{StaticResource Divider}"/>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="{h:L set.autoCheck}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock Text="{h:L set.autoCheck.desc}" Style="{StaticResource Hint}"/>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="AutoUpdateCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}" Click="AutoUpdate_Click"/>
+                                </Grid>
+                                <Border Style="{StaticResource Divider}"/>
+                                <Grid Style="{StaticResource ListRow}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="{h:L set.autoInstall}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock Text="{h:L set.autoInstall.desc}" Style="{StaticResource Hint}"/>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="AutoInstallCheck" Grid.Column="1" Style="{StaticResource SwitchStyle}" Click="AutoInstall_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <DockPanel Margin="0,16,0,0">
+                            <Button DockPanel.Dock="Right" Content="{h:L set.quit}" Style="{StaticResource BtnDanger}" Click="Quit_Click"/>
+                            <Button Content="{h:L set.resetAll}" Style="{StaticResource BtnGhost}" HorizontalAlignment="Left" Click="ResetAll_Click"/>
+                        </DockPanel>
+                    </StackPanel>
+
+                    <!-- ========== عن حوّل ========== -->
+                    <StackPanel x:Name="AboutTab" Visibility="Collapsed">
+                        <Border Style="{StaticResource CardStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Width="72" Height="72" CornerRadius="16" Background="White" BorderBrush="{DynamicResource Line}" BorderThickness="1">
+                                    <Image x:Name="AboutLogo" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="Hawwel · حوّل" FontSize="17" FontWeight="Bold"/>
+                                    <TextBlock x:Name="AboutVersion" Style="{StaticResource Hint}"/>
+                                    <TextBlock Text="{h:L about.desc}" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <DockPanel>
+                                    <Border DockPanel.Dock="Right" Background="{DynamicResource AccentSoft}" CornerRadius="99" Padding="10,3">
+                                        <TextBlock Text="{h:L badge.new}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Accent}"/>
+                                    </Border>
+                                    <TextBlock x:Name="NewInTitle" Style="{StaticResource CardTitle}"/>
+                                </DockPanel>
+                                <StackPanel x:Name="Changelog" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <UniformGrid Columns="2" Margin="-4,8,-4,0">
+                            <Button Style="{StaticResource LinkTile}" Tag="https://hawwelapp.vercel.app/" Click="Link_Click">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right" Style="{StaticResource Icon}" FontSize="12" Text="&#xE8A7;"/>
+                                    <TextBlock Text="{h:L about.link.website}"/>
+                                </DockPanel>
+                            </Button>
+                            <Button Style="{StaticResource LinkTile}" Tag="https://github.com/ashrafabdulmn3m/Hawwel" Click="Link_Click">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right" Style="{StaticResource Icon}" FontSize="12" Text="&#xE8A7;"/>
+                                    <TextBlock Text="{h:L about.link.source}"/>
+                                </DockPanel>
+                            </Button>
+                            <Button Style="{StaticResource LinkTile}" Tag="https://www.youtube.com/@HawwelApp" Click="Link_Click">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right" Style="{StaticResource Icon}" FontSize="12" Text="&#xE8A7;"/>
+                                    <TextBlock Text="{h:L about.link.bug}"/>
+                                </DockPanel>
+                            </Button>
+                            <Button Style="{StaticResource LinkTile}" Tag="https://docs.google.com/forms/d/e/1FAIpQLSea7SjLbKyhVT8Bp3jT2pljAdNw3ymSG9_iVv-fBfg9PpUMkg/viewform" Click="Link_Click">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right" Style="{StaticResource Icon}" FontSize="12" Text="&#xE8A7;"/>
+                                    <TextBlock Text="{h:L about.link.feature}"/>
+                                </DockPanel>
+                            </Button>
+                        </UniformGrid>
+
+                        <TextBlock Text="{h:L about.share}" Style="{StaticResource Hint}" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- ================= الفوتر ================= -->
+        <Border Grid.Row="1" Grid.ColumnSpan="2" Background="{DynamicResource Side}" BorderBrush="{DynamicResource Line}" BorderThickness="0,1,0,0">
+            <DockPanel Margin="16,0" VerticalAlignment="Center">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Style="{StaticResource SocialButton}" Tag="https://www.facebook.com/ashrafmn3m/" ToolTip="Facebook" Click="Link_Click">
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="M 13.5 21 v -7.5 h 2.6 l .4 -3 h -3 V 8.6 c 0 -.9 .3 -1.5 1.5 -1.5 h 1.6 V 4.4 c -.3 0 -1.2 -.1 -2.3 -.1 -2.3 0 -3.9 1.4 -3.9 4 v 2.2 H 7.8 v 3 h 2.6 V 21 z"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button Style="{StaticResource SocialButton}" Tag="https://www.instagram.com/ashrafabdulmonnem/" ToolTip="Instagram" Click="Link_Click">
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Rectangle Canvas.Left="3.5" Canvas.Top="3.5" Width="17" Height="17" RadiusX="5" RadiusY="5" StrokeThickness="1.8"
+                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                <Ellipse Canvas.Left="8" Canvas.Top="8" Width="8" Height="8" StrokeThickness="1.8"
+                                         Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                <Ellipse Canvas.Left="16.3" Canvas.Top="5.7" Width="2" Height="2"
+                                         Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button Style="{StaticResource SocialButton}" Tag="https://github.com/ashrafabdulmn3m" ToolTip="GitHub" Click="Link_Click">
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="M 12 2.5 a 9.5 9.5 0 0 0 -3 18.5 c .5 .1 .7 -.2 .7 -.5 v -1.7 c -2.6 .6 -3.2 -1.2 -3.2 -1.2 -.4 -1.1 -1 -1.4 -1 -1.4 -.9 -.6 .1 -.6 .1 -.6 1 .1 1.5 1 1.5 1 .8 1.5 2.2 1 2.8 .8 .1 -.6 .3 -1 .6 -1.2 -2.1 -.2 -4.3 -1 -4.3 -4.7 0 -1 .4 -1.9 1 -2.6 -.1 -.2 -.4 -1.2 .1 -2.5 0 0 .8 -.3 2.6 1 a 9 9 0 0 1 4.8 0 c 1.8 -1.3 2.6 -1 2.6 -1 .5 1.3 .2 2.3 .1 2.5 .6 .7 1 1.6 1 2.6 0 3.7 -2.2 4.5 -4.3 4.7 .3 .3 .6 .9 .6 1.8 v 2.6 c 0 .3 .2 .6 .7 .5 A 9.5 9.5 0 0 0 12 2.5 z"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button Style="{StaticResource SocialButton}" Tag="https://www.youtube.com/@HawwelApp" ToolTip="YouTube" Click="Link_Click">
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="F0 M 21.6 7.2 a 2.5 2.5 0 0 0 -1.8 -1.8 C 18.2 5 12 5 12 5 s -6.2 0 -7.8 .4 a 2.5 2.5 0 0 0 -1.8 1.8 C 2 8.8 2 12 2 12 s 0 3.2 .4 4.8 a 2.5 2.5 0 0 0 1.8 1.8 C 5.8 19 12 19 12 19 s 6.2 0 7.8 -.4 a 2.5 2.5 0 0 0 1.8 -1.8 c .4 -1.6 .4 -4.8 .4 -4.8 s 0 -3.2 -.4 -4.8 z M 10 15 V 9 l 5.2 3 z"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </StackPanel>
+                <TextBlock Text="{h:L footer.copyright}" FontSize="11.5" Foreground="{DynamicResource Muted}"
+                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+            </DockPanel>
+        </Border>
+    </Grid>
 </Window>

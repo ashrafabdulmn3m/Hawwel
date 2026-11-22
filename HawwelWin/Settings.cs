@@ -12,9 +12,32 @@ public sealed class Settings
     public uint HotkeyVk { get; set; } = 0x4B; // K
     public bool ShowTray { get; set; } = true;
     public bool HasLaunchedBefore { get; set; }
-    public string Theme { get; set; } = "";               // light | dark (فاضي = ياخد وضع ويندوز أول مرة)
-    public bool AutoCheckUpdates { get; set; } = true;   // الفحص الدوري من GitHub (ممكن المستخدم يقفله)
-    public string LastNotifiedUpdate { get; set; } = ""; // علشان الإشعار ما يتكررش لنفس الإصدار
+    public string Theme { get; set; } = "system";         // light | dark | system
+    public string Language { get; set; } = "";            // ar | en (فاضي = أول مرة)
+    public bool SidebarCollapsed { get; set; }
+    public bool PlaySound { get; set; }                   // نغمة خفيفة عند التحويل
+    public bool SwitchKeyboard { get; set; } = true;      // غيّر لغة الكيبورد بعد التحويل
+    public bool AutoCheckUpdates { get; set; } = true;    // الفحص الدوري من GitHub (ممكن المستخدم يقفله)
+    public bool AutoInstallUpdates { get; set; }          // نزّل التحديث في الخلفية
+    public DateTime? LastUpdateCheck { get; set; }
+    public string LastNotifiedUpdate { get; set; } = "";  // علشان الإشعار ما يتكررش لنفس الإصدار
+
+    /// <summary>"رجّع كل الإعدادات": كل اللي في البانل يرجع للافتراضي.
+    /// التشغيل مع الجهاز ولغة الواجهة والإحصائيات بيفضلوا زي ما هم.</summary>
+    public void ResetToDefaults()
+    {
+        var d = new Settings();
+        HotkeyModifiers = d.HotkeyModifiers;
+        HotkeyVk = d.HotkeyVk;
+        ShowTray = d.ShowTray;
+        Theme = d.Theme;
+        SidebarCollapsed = d.SidebarCollapsed;
+        PlaySound = d.PlaySound;
+        SwitchKeyboard = d.SwitchKeyboard;
+        AutoCheckUpdates = d.AutoCheckUpdates;
+        AutoInstallUpdates = d.AutoInstallUpdates;
+        Save();
+    }
 
     private static string FilePath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Hawwel", "settings.json");

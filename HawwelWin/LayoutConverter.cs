@@ -12,21 +12,32 @@ public sealed class LayoutConverter
     private const string ArabicKlid = "00000401"; // Arabic (101): احتياطي لو مفيش كيبورد عربي مثبّت
     private const uint LangArabic = 0x01;         // اللغة الأساسية: عربي (مصر، السعودية، ...)
 
+    private const uint LangEnglish = 0x09;
+
+    /// <summary>الكيبوردين اللي اتبنى عليهم الجدول (علشان نغيّر لغة الكيبورد بعد التحويل)</summary>
+    public IntPtr EnglishLayout { get; private set; }
+    public IntPtr ArabicLayout { get; private set; }
+
     private readonly Dictionary<string, string> _enToAr = new();
     private readonly Dictionary<string, string> _arToEn = new();
 
     private LayoutConverter() { }
 
-    /// <summary>أول كيبورد عربي مثبّت عند المستخدم (أي نوع: 101 أو 102 أو غيره، ولأي دولة عربية).</summary>
-    private static IntPtr FindInstalledArabic()
+    /// <summary>أول كيبورد مثبّت عند المستخدم للغة دي (عربي: 101 أو 102 أو غيره، ولأي دولة).</summary>
+    private static IntPtr FindInstalled(uint primaryLang)
     {
         foreach (var h in Native.InstalledLayouts())
         {
             uint langId = (uint)((long)h & 0xFFFF);   // الـ LANGID في الجزء الواطي من الـ HKL
-            if ((langId & 0x3FF) == LangArabic) return h;
+            if ((langId & 0x3FF) == primaryLang) return h;
         }
         return IntPtr.Zero;
     }
+
+    private static IntPtr FindInstalledArabic() => FindInstalled(LangArabic);
+
+    /// <summary>المستخدم عنده كيبورد إنجليزي وكيبورد عربي متسطّبين؟ (كارت الكيبوردات في الرئيسية)</summary>
+    public static bool BothInstalled() => FindInstalled(LangEnglish) != IntPtr.Zero && FindInstalledArabic() != IntPtr.Zero;
 
     /// <summary>بيرجع null لو الكيبوردين مش متاحين.</summary>
     public static LayoutConverter? TryCreate()
@@ -36,7 +47,12 @@ public sealed class LayoutConverter
         if (ar == IntPtr.Zero) ar = Native.LoadKeyboardLayout(ArabicKlid, Native.KLF_NOACTIVATE); // احتياطي
         if (en == IntPtr.Zero || ar == IntPtr.Zero) return null;
 
-        var c = new LayoutConverter();
+        var c = new LayoutConverter
+        {
+            // للتبديل بعد التحويل لازم يكون الكيبورد متسطّب عند المستخدم فعلاً
+            EnglishLayout = FindInstalled(LangEnglish),
+            ArabicLayout = FindInstalledArabic(),
+        };
         foreach (uint scan in ScanCodes())
         {
             foreach (bool shift in new[] { false, true })
@@ -77,11 +93,14 @@ public sealed class LayoutConverter
     }
 
     /// <summary>يحوّل النص تلقائياً: لو أغلبه لاتيني → عربي، وإلا → إنجليزي.</summary>
-    public string Convert(string text)
+    public string Convert(string text) => Map(text, IsToArabic(text) ? _enToAr : _arToEn);
+
+    /// <summary>النص هيتحوّل لعربي؟ (لو أغلب حروفه لاتيني)</summary>
+    public static bool IsToArabic(string text)
     {
         int latin = text.Count(ch => ch < 128 && char.IsLetter(ch));
         int arabic = text.Count(ch => ch >= 0x0600 && ch <= 0x06FF);
-        return Map(text, latin > arabic ? _enToAr : _arToEn);
+        return latin > arabic;
     }
 
     private static string Map(string text, Dictionary<string, string> table)

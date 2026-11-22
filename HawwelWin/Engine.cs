@@ -5,16 +5,30 @@ using System.Windows;
 
 namespace Hawwel;
 
+public enum EngineStatus { Ready, Converted, NoSelection, NoKeyboard, ConsoleApp, Error }
+
 /// <summary>
-/// نفس منطق Engine.swift: ينسخ التحديد (أو آخر كلمة) → يحوّله → يلصقه → يرجّع الـ clipboard القديم.
+/// نفس منطق Engine.swift: ينسخ التحديد → يحوّله → يلصقه → يرجّع الـ clipboard القديم.
+/// لو مفيش كلام محدد: ما بيعملش حاجة وبيقول للمستخدم يحدد الأول.
 /// </summary>
 public sealed class Engine : INotifyPropertyChanged
 {
-    private string _status = "جاهز";
-    public string Status { get => _status; set { _status = value; OnChanged(); } }
+    private EngineStatus _status = EngineStatus.Ready;
+    public EngineStatus Status { get => _status; private set { _status = value; OnChanged(); } }
+    public string LastError { get; private set; } = "";
 
-    private LayoutConverter? _converter;
+    /// <summary>بعد كل ضغطة اختصار (نجح ولا لأ) — كارت "جرّب هنا" بيستخدمه</summary>
+    public event Action<bool>? Finished;
+
+    private readonly Stats _stats;
+    private readonly Settings _settings;
     private bool _busy;
+
+    public Engine(Stats stats, Settings settings)
+    {
+        _stats = stats;
+        _settings = settings;
+    }
 
     // برامج الـ Console: Ctrl+C فيها معناها "إيقاف البرنامج" مش "نسخ"، فمش هنبعتها.
     private static readonly HashSet<string> ConsoleApps = new(StringComparer.OrdinalIgnoreCase)
@@ -30,44 +44,62 @@ public sealed class Engine : INotifyPropertyChanged
     {
         if (_busy) return;
         _busy = true;
+        EngineStatus result = EngineStatus.Error;
         try
         {
-            _converter ??= LayoutConverter.TryCreate();
-            if (_converter == null) { Status = "⚠️ مش لاقي كيبورد عربي أو انجليزي، ضيفه من إعدادات اللغة في ويندوز"; return; }
+            // بنبنيه كل مرة (سريع) علشان لو المستخدم ضاف كيبورد والبرنامج شغّال
+            var converter = LayoutConverter.TryCreate();
+            if (converter == null) { result = EngineStatus.NoKeyboard; return; }
 
             var app = Native.ForegroundProcessName();
-            if (app != null && ConsoleApps.Contains(app))
-            {
-                Status = "⚠️ مش مدعوم في الـ Terminal (Ctrl+C بيوقف البرنامج)";
-                return;
-            }
+            if (app != null && ConsoleApps.Contains(app)) { result = EngineStatus.ConsoleApp; return; }
+            bool practice = string.Equals(app, System.Diagnostics.Process.GetCurrentProcess().ProcessName,
+                                          StringComparison.OrdinalIgnoreCase); // كارت "جرّب هنا"
 
             await WaitForKeysReleased();
 
             var saved = Snapshot();
-
             var text = await CopySelection();
             if (text == null)
             {
-                // مفيش تحديد: حدد آخر كلمة (Ctrl+Shift+←)
-                Native.Press(Native.VK_LEFT, Native.VK_CONTROL, Native.VK_SHIFT);
-                await Task.Delay(100);
-                text = await CopySelection();
-                if (text == null)
-                {
-                    Status = "مفيش نص محدد";
-                    Restore(saved);
-                    return;
-                }
+                Restore(saved);
+                result = EngineStatus.NoSelection;
+                return;
             }
 
-            await Replace(_converter.Convert(text), saved, app);
+            bool toArabic = LayoutConverter.IsToArabic(text);
+            await Replace(converter.Convert(text), saved, app);
+            result = EngineStatus.Converted;
+
+            if (!practice) _stats.Record(text.Length, toArabic, AppDisplayName(app));
+            if (_settings.PlaySound) ConvertSound.Play();
+            if (_settings.SwitchKeyboard) Native.SwitchLayout(toArabic ? converter.ArabicLayout : converter.EnglishLayout);
         }
         catch (Exception ex)
         {
-            Status = "⚠️ حصل خطأ: " + ex.Message;
+            LastError = ex.Message;
+            result = EngineStatus.Error;
         }
-        finally { _busy = false; }
+        finally
+        {
+            _busy = false;
+            Status = result;
+            Finished?.Invoke(result == EngineStatus.Converted);
+        }
+    }
+
+    /// <summary>اسم البرنامج زي ما بيظهر للمستخدم (WhatsApp بدل whatsapp.exe)</summary>
+    private static string? AppDisplayName(string? process)
+    {
+        if (string.IsNullOrEmpty(process)) return null;
+        try
+        {
+            var p = System.Diagnostics.Process.GetProcessesByName(process).FirstOrDefault();
+            var desc = p?.MainModule?.FileVersionInfo.FileDescription;
+            if (!string.IsNullOrWhiteSpace(desc)) return desc;
+        }
+        catch { }
+        return char.ToUpperInvariant(process[0]) + process[1..];
     }
 
     /// <summary>ننتظر المستخدم يرفع إيده من الاختصار علشان ما يتخلطش مع Ctrl+C اللي هنبعتها.</summary>
@@ -98,14 +130,12 @@ public sealed class Engine : INotifyPropertyChanged
     private async Task Replace(string text, DataObject? saved, string? app)
     {
         bool adobe = app != null && AdobePrefixes.Any(p => app.StartsWith(p, StringComparison.OrdinalIgnoreCase));
-        string preview = text.Length > 30 ? text[..30] : text;
 
         if (adobe)
         {
             Restore(saved);
             await Task.Delay(100);
             Native.TypeText(text);
-            Status = "✅ اتحول: " + preview;
             return;
         }
 
@@ -117,7 +147,6 @@ public sealed class Engine : INotifyPropertyChanged
 
         await Task.Delay(50);
         Native.Press(Native.VK_V, Native.VK_CONTROL);
-        Status = "✅ اتحول: " + preview;
 
         await Task.Delay(400);
         Restore(saved);

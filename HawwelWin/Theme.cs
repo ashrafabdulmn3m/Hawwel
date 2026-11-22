@@ -6,63 +6,53 @@ using Microsoft.Win32;
 
 namespace Hawwel;
 
-/// <summary>الوضع النهاري/الليلي: بنبدّل ألوان الـ resources وقت التشغيل (DynamicResource).</summary>
+/// <summary>المظهر: فاتح / داكن / زي النظام. بنبدّل ألوان الـ resources وقت التشغيل (DynamicResource).</summary>
 public static class Theme
 {
-    public const string Light = "light", Dark = "dark";
+    public const string Light = "light", Dark = "dark", System = "system";
 
     private static Settings _settings = null!;
-    public static string Mode { get; private set; } = Light;
+    public static string Mode { get; private set; } = System;
     public static bool IsDark { get; private set; }
+    public static event Action? Changed;
 
-    // (نهاري, ليلي)
+    // ألوان تصميم Hawwel 2.0 (فاتح, داكن)
     private static readonly Dictionary<string, (string L, string D)> Palette = new()
     {
-        ["Accent"]          = ("#1E88E5", "#3D9CF5"),
-        ["AccentHover"]     = ("#1976D2", "#5AAEF7"),
-        ["AccentSoft"]      = ("#E3F1FD", "#1A3350"),
-        ["AccentSoftHover"] = ("#D1E7FB", "#21406A"),
-        ["AccentText"]      = ("#1E88E5", "#5DB1F7"),
-        ["Ink"]             = ("#171C2E", "#EDF0F8"),
-        ["Muted"]           = ("#5F6B85", "#9AA4BE"),
-        ["Bg"]              = ("#F3F5FA", "#0F1422"),
-        ["Card"]            = ("#FFFFFF", "#1A2036"),
-        ["CardBorder"]      = ("#E8ECF4", "#262E48"),
-        ["Divider"]         = ("#ECEFF5", "#262E48"),
-        ["Field"]           = ("#FAFBFE", "#0F1422"),
-        ["FieldBorder"]     = ("#C9D1E3", "#2F3858"),
-        ["Placeholder"]     = ("#8B94AB", "#6F7A96"),
-        ["SwitchOff"]       = ("#C7CEDC", "#3A4360"),
-        ["OutlineBg"]       = ("#FFFFFF", "#1A2036"),
-        ["OutlineBorder"]   = ("#D5DBE8", "#323B5A"),
-        ["OutlineHover"]    = ("#F3F5FA", "#232B45"),
-        ["ChipBg"]          = ("#F4F7FC", "#232B45"),
-        ["ChipBorder"]      = ("#C9D3E6", "#313A58"),
-        ["UpdateBg"]        = ("#E8F3FD", "#16294A"),
-        ["UpdateBorder"]    = ("#BBDDFB", "#25477A"),
-        ["ProgressTrack"]   = ("#CFE3F8", "#25354F"),
-        ["Warn"]            = ("#B45309", "#FBBF24"),
-        ["PillOkBg"]        = ("#E2F3E7", "#14382A"),
-        ["PillOkDot"]       = ("#2EA44F", "#34D26B"),
-        ["PillOkText"]      = ("#1B7F3B", "#4ADE80"),
-        ["PillWarnBg"]      = ("#FFF3DC", "#3A2C10"),
-        ["PillWarnDot"]     = ("#F59E0B", "#FBBF24"),
-        ["PillWarnText"]    = ("#9A6200", "#FCD34D"),
-        ["PillIdleBg"]      = ("#EAEFF8", "#232B45"),
-        ["PillIdleDot"]     = ("#8A94AB", "#8A94AB"),
-        ["PillIdleText"]    = ("#3B4660", "#B8C1D9"),
+        ["Bg"]         = ("#F3F5F9", "#131829"),
+        ["Side"]       = ("#E8ECF4", "#0E1222"),
+        ["Card"]       = ("#FFFFFF", "#1B2237"),
+        ["Line"]       = ("#DCE2EC", "#29324D"),
+        ["Ink"]        = ("#141B2D", "#ECEFF7"),
+        ["Muted"]      = ("#66708A", "#8C95B0"),
+        ["Accent"]     = ("#2F86E4", "#5B9CF0"),
+        ["AccentHover"]= ("#2577D2", "#74ACF3"),
+        ["AccentSoft"] = ("#E2EDFC", "#1D3150"),
+        ["Ok"]         = ("#2E9D57", "#5BC27E"),
+        ["OkSoft"]     = ("#E0F3E6", "#163222"),
+        ["Warn"]       = ("#B8770C", "#E3AC40"),
+        ["WarnSoft"]   = ("#FBF0DC", "#3A2D12"),
+        ["WarnLine"]   = ("#E9CF9E", "#5A4419"),
+        ["Field"]      = ("#F6F8FB", "#0D1121"),
+        ["Key"]        = ("#F4F6FA", "#232B45"),
+        ["KeyShadow"]  = ("#D3D8E2", "#141A2C"),
+        ["Danger"]     = ("#D9534F", "#F07470"),
+        ["Hover"]      = ("#E9ECF2", "#222A41"),
+        ["SwitchOff"]  = ("#CDD2DC", "#3A4360"),
+        ["SoonBg"]     = ("#EAECF0", "#252C40"),
+        ["AccentMid"]  = ("#B5D2F4", "#2C4A75"),   // الأعمدة اللي مش النهارده
     };
 
     public static void Init(Settings settings)
     {
         _settings = settings;
         Mode = Normalize(settings.Theme);
-        // الإصدارات القديمة كان فيها "تلقائي" (أو أول تشغيل): بناخد وضع ويندوز الحالي ونحفظه
-        if (settings.Theme != Mode)
+        // لما المستخدم يغيّر وضع ويندوز والتطبيق على "زي النظام"
+        SystemEvents.UserPreferenceChanged += (_, _) =>
         {
-            settings.Theme = Mode;
-            settings.Save();
-        }
+            if (Mode == System)
+                Application.Current.Dispatcher.BeginInvoke(new Action(Apply));
+        };
         Apply();
     }
 
@@ -74,10 +64,7 @@ public static class Theme
         Apply();
     }
 
-    /// <summary>بيبدّل بين النهاري والليلي (زرار الدايرة).</summary>
-    public static void Toggle() => Set(IsDark ? Light : Dark);
-
-    private static string Normalize(string? m) => m is Light or Dark ? m : (SystemUsesDark() ? Dark : Light);
+    private static string Normalize(string? m) => m is Light or Dark ? m : System;
 
     private static bool SystemUsesDark()
     {
@@ -89,16 +76,19 @@ public static class Theme
         catch { return false; }
     }
 
-    private static void Apply()
+    public static void Apply()
     {
-        IsDark = Mode == Dark;
+        IsDark = Mode == Dark || (Mode == System && SystemUsesDark());
         var res = Application.Current.Resources;
         foreach (var (key, c) in Palette)
         {
             var color = (Color)ColorConverter.ConvertFromString(IsDark ? c.D : c.L);
-            res[key] = new SolidColorBrush(color); // استبدال الـ brush => كل DynamicResource بيتحدّث
+            var brush = new SolidColorBrush(color);
+            brush.Freeze();
+            res[key] = brush; // استبدال الـ brush => كل DynamicResource بيتحدّث
         }
         foreach (Window w in Application.Current.Windows) ApplyTitleBar(w);
+        Changed?.Invoke();
     }
 
     /// <summary>شريط عنوان النافذة غامق/فاتح (ويندوز 10 1903+ و 11).</summary>
@@ -109,6 +99,10 @@ public static class Theme
         int on = IsDark ? 1 : 0;
         if (DwmSetWindowAttribute(h, 20, ref on, sizeof(int)) != 0)
             DwmSetWindowAttribute(h, 19, ref on, sizeof(int));
+        // لون شريط العنوان نفس لون السايدبار (ويندوز 11، وويندوز 10 بيتجاهله)
+        var bg = (Color)ColorConverter.ConvertFromString(IsDark ? Palette["Side"].D : Palette["Side"].L);
+        int colorRef = bg.R | (bg.G << 8) | (bg.B << 16);
+        DwmSetWindowAttribute(h, 35, ref colorRef, sizeof(int));
     }
 
     [DllImport("dwmapi.dll")]
