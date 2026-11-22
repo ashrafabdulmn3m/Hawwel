@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.1/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
+  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v2.0.0/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
 </p>
@@ -24,17 +24,17 @@ Hawwel is a small app for **macOS and Windows** that converts text typed with th
 `lvpfh` → `مرحبا`  and  `مرحبا` → `lvpfh`
 
 - Works in any app: browsers, Word, Notes, Photoshop and more.
-- Nothing selected? On Mac it asks you to select the text first; on Windows it converts the last word you typed.
+- Nothing selected? Hawwel asks you to select the text first.
 - Detects the direction automatically.
 - Choose your own shortcut (default: `⌃K` on Mac, `Ctrl + Alt + K` on Windows).
 - Optional menu bar / system tray icon and launch at login.
-- Mac: Arabic and English interface, light/dark mode, an Activity tab with your conversion stats, an optional quiet sound, and switching the keyboard to the right language after converting.
+- Arabic and English interface, light/dark mode, an Activity tab with your conversion stats, an optional quiet sound, and switching the keyboard to the right language after converting.
 - Works offline. No data is collected: stats stay on your Mac and the text itself is never saved. The only network use is the optional update check.
 ## Download
 
 | Platform | Download | Requirements |
 |---|---|---|
-| **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.1/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
+| **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v2.0.0/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
 | **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg) (`Hawwel-2.0.0.dmg`) | macOS 14 or later |
 
 Older versions and release notes are on the [Releases page](https://github.com/ashrafabdulmn3m/Hawwel/releases).
@@ -45,7 +45,7 @@ Keyboards: on **macOS** it works with the **ABC or US** English layout and any *
 
 ## Install on Windows
 
-1. Download [`Hawwel-Setup.exe`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v1.1.1/Hawwel-Setup.exe) and run it.
+1. Download [`Hawwel-Setup.exe`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v2.0.0/Hawwel-Setup.exe) and run it.
 2. Windows may show **"Windows protected your PC"**, because the installer isn't code-signed yet. Click **More info**, then **Run anyway**.
 3. Click **Next** until **Install**. Leave **Launch Hawwel** checked, and choose whether it should start with Windows.
 4. Hawwel runs in the **system tray** (the `^` arrow next to the clock). Click its icon to open the window and change the shortcut.
@@ -70,7 +70,7 @@ To remove it: **Settings → Apps → Installed apps → Hawwel → Uninstall**.
 ## Usage
 
 1. Type something with the wrong layout.
-2. Select it (on Windows you can also leave nothing selected to fix the last word).
+2. Select it.
 3. Press your shortcut (default `⌃K` on Mac, `Ctrl + Alt + K` on Windows).
 
 You can change the shortcut from the Hawwel window.
