@@ -7,6 +7,30 @@
     <language>en</language>
 
     <item>
+      <title>Version 2.0.0</title>
+      <pubDate>Sun, 22 Nov 2026 20:05:00 +0200</pubDate>
+      <sparkle:version>7</sparkle:version>
+      <sparkle:shortVersionString>2.0.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+        <ul>
+          <li>A brand-new design with a sidebar: Home, Shortcuts, Activity, Settings and About</li>
+          <li>English interface: switch between Arabic and English from Settings</li>
+          <li>Activity: your conversion stats, saved only on your Mac</li>
+          <li>Change the shortcut inside the app, with a warning if macOS already uses it</li>
+          <li>Optional quiet sound, and switching the keyboard to the right language after converting</li>
+          <li>Light, Dark or System appearance, and a resizable window</li>
+          <li>With nothing selected, Hawwel now asks you to select the text first</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg"
+        sparkle:edSignature="sKTe+iEVtH3HoviTRwAYpt9SFie5ZSVnjJfKNPMuPzWNwoFRcbasW86FSy2QBUvWYf5/0roNBpQJ+Z/9dZM6AA=="
+        length="2643364"
+        type="application/octet-stream"/>
+    </item>
+
+    <item>
       <title>Version 1.3.1</title>
       <pubDate>Sun, 22 Nov 2026 16:14:00 +0200</pubDate>
       <sparkle:version>6</sparkle:version>
