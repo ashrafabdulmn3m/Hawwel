@@ -13,33 +13,36 @@
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v2.0.0/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/linux-v2.0.0/Hawwel-Linux.tar.gz"><b>⬇️ Download Hawwel Linux</b></a>
 </p>
 
 ---
 
 ## What it does
 
-Hawwel is a small app for **macOS and Windows** that converts text typed with the wrong keyboard layout between **English and Arabic**.
+Hawwel is a small app for **macOS, Windows and Linux** that converts text typed with the wrong keyboard layout between **English and Arabic**.
 
 `lvpfh` → `مرحبا`  and  `مرحبا` → `lvpfh`
 
 - Works in any app: browsers, Word, Notes, Photoshop and more.
 - Nothing selected? Hawwel asks you to select the text first.
 - Detects the direction automatically.
-- Choose your own shortcut (default: `⌃K` on Mac, `Ctrl + Alt + K` on Windows).
+- Choose your own shortcut (default: `⌃K` on Mac, `Ctrl + Alt + K` on Windows and Linux).
 - Optional menu bar / system tray icon and launch at login.
-- Arabic and English interface, light/dark mode, an Activity tab with your conversion stats, an optional quiet sound, and switching the keyboard to the right language after converting.
-- Works offline. No data is collected: stats stay on your Mac and the text itself is never saved. The only network use is the optional update check.
+- Arabic and English interface, light/dark mode, an Activity tab with your conversion stats, an optional quiet sound, and (on Mac and Windows) switching the keyboard to the right language after converting.
+- Works offline. No data is collected: stats stay on your computer and the text itself is never saved. The only network use is the optional update check.
 ## Download
 
 | Platform | Download | Requirements |
 |---|---|---|
 | **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v2.0.0/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
 | **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg) (`Hawwel-2.0.0.dmg`) | macOS 14 or later |
+| **Linux** | [**Download Hawwel Linux**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/linux-v2.0.0/Hawwel-Linux.tar.gz) (`Hawwel-Linux.tar.gz`) | Python 3.9+, X11 or Wayland |
 
 Older versions and release notes are on the [Releases page](https://github.com/ashrafabdulmn3m/Hawwel/releases).
 
-Keyboards: on **macOS** it works with the **ABC or US** English layout and any **Arabic** layout (Arabic – PC is preferred). On **Windows** you need **English (US)** and **Arabic (101)** added in *Settings → Time & language → Language & region*.
+Keyboards: on **macOS** it works with the **ABC or US** English layout and any **Arabic** layout (Arabic – PC is preferred). On **Windows** you need **English (US)** and **Arabic (101)** added in *Settings → Time & language → Language & region*. On **Linux** it uses the standard **Arabic (101)** layout.
 
 ---
 
@@ -65,13 +68,26 @@ To remove it: **Settings → Apps → Installed apps → Hawwel → Uninstall**.
 ```
 6. In the Hawwel window, click **Enable** and turn Hawwel on under **Privacy & Security → Accessibility**. Then quit and reopen the app.
 
+## Install on Linux
+
+1. Download [`Hawwel-Linux.tar.gz`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/linux-v2.0.0/Hawwel-Linux.tar.gz) and extract it.
+2. Run:
+```
+   bash Hawwel/packaging/install.sh
+```
+   It installs the tools Hawwel needs (`xdotool` and `xclip` on X11, or `wl-clipboard` and `ydotool` on Wayland; it asks for your password for this part only), then installs Hawwel for your user and adds it to your apps menu.
+3. Open **Hawwel** from your apps menu.
+4. **The shortcut:** on **GNOME / Ubuntu** Hawwel sets it for you. On **KDE, XFCE and others**, open the **Shortcuts** tab, copy the command, and add it as a custom shortcut in your keyboard settings.
+
+To remove it: `bash Hawwel/packaging/uninstall.sh`. More details in [HawwelLinux/README.md](HawwelLinux/README.md).
+
 ---
 
 ## Usage
 
 1. Type something with the wrong layout.
 2. Select it.
-3. Press your shortcut (default `⌃K` on Mac, `Ctrl + Alt + K` on Windows).
+3. Press your shortcut (default `⌃K` on Mac, `Ctrl + Alt + K` on Windows and Linux).
 
 You can change the shortcut from the Hawwel window.
 
