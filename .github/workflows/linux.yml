@@ -1,0 +1,52 @@
+name: Build Hawwel (Linux)
+
+on:
+  push:
+    branches: [main]
+    paths: ['HawwelLinux/**', '.github/workflows/linux.yml']
+    tags: ['linux-v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write   # علشان نضيف الملف على الـ Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Tests
+        working-directory: HawwelLinux
+        run: python -m unittest discover tests -v
+
+      - name: Compute version
+        id: ver
+        run: |
+          ver=2.0.0
+          if [ "${{ github.ref_type }}" = "tag" ]; then ver="${GITHUB_REF_NAME#linux-v}"; fi
+          echo "ver=$ver" >> "$GITHUB_OUTPUT"
+
+      - name: Package
+        run: |
+          sed -i "s/^__version__ = .*/__version__ = \"${{ steps.ver.outputs.ver }}\"/" HawwelLinux/hawwel/__init__.py
+          mkdir -p dist
+          cp -r HawwelLinux Hawwel
+          rm -rf Hawwel/tests Hawwel/hawwel/__pycache__
+          tar czf dist/Hawwel-Linux.tar.gz Hawwel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Hawwel-Linux
+          path: dist/Hawwel-Linux.tar.gz
+
+      - name: Attach to GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Hawwel for Linux ${{ github.ref_name }}
+          files: dist/Hawwel-Linux.tar.gz

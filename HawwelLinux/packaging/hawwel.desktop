@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Hawwel
+Name[ar]=حوّل
+Comment=Fix text typed in the wrong keyboard layout (Arabic ⇄ English)
+Comment[ar]=حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار
+Exec=@BIN@
+Icon=hawwel
+Terminal=false
+Categories=Utility;
+Keywords=keyboard;arabic;layout;convert;
+StartupWMClass=Hawwel

@@ -1,0 +1,586 @@
+{
+ "about.desc": {
+  "en": "Fix text typed in the wrong keyboard layout with one shortcut, in any app.",
+  "ar": "حوّل الكلام المكتوب بالكيبورد الغلط بضغطة اختصار، في أي برنامج."
+ },
+ "about.link.bug": {
+  "en": "Report a bug",
+  "ar": "بلّغ عن مشكلة"
+ },
+ "about.link.feature": {
+  "en": "Suggest a feature",
+  "ar": "اقترح ميزة"
+ },
+ "about.link.source": {
+  "en": "Source on GitHub",
+  "ar": "الكود على GitHub"
+ },
+ "about.link.website": {
+  "en": "Website",
+  "ar": "الموقع الرسمي"
+ },
+ "about.log.1": {
+  "en": "A new design with a sidebar, in Arabic and English",
+  "ar": "تصميم جديد بسايدبار، بالعربي والإنجليزي"
+ },
+ "about.log.2": {
+  "en": "Activity tab: your conversion stats, saved only on your Mac",
+  "ar": "تاب النشاط: إحصائيات التحويل، محفوظة على جهازك بس"
+ },
+ "about.log.3": {
+  "en": "Optional quiet sound when converting",
+  "ar": "صوت خفيف اختياري عند التحويل"
+ },
+ "about.log.4": {
+  "en": "Set the shortcut inside the app; on GNOME it is applied for you",
+  "ar": "غيّر الاختصار من جوه البرنامج، وعلى GNOME بيتظبط لوحده"
+ },
+ "about.log.5": {
+  "en": "With nothing selected, Hawwel asks you to select the text first",
+  "ar": "لو مفيش كلام محدد، Hawwel بيقولك تحدده الأول"
+ },
+ "about.newIn": {
+  "en": "What’s new in {0}",
+  "ar": "الجديد في {0}"
+ },
+ "about.share": {
+  "en": "Like Hawwel? Tell your friends.",
+  "ar": "لو Hawwel عجبك، قول لصحابك عليه"
+ },
+ "about.version": {
+  "en": "Version {0} (Linux)",
+  "ar": "الإصدار {0} (Linux)"
+ },
+ "act.apps": {
+  "en": "Top apps",
+  "ar": "أكتر برامج بتحوّل فيها"
+ },
+ "act.apps.empty": {
+  "en": "The apps you convert in will show up here.",
+  "ar": "البرامج اللي بتحوّل فيها هتظهر هنا."
+ },
+ "act.chars": {
+  "en": "characters",
+  "ar": "حرف اتحوّل"
+ },
+ "act.clear": {
+  "en": "Clear stats",
+  "ar": "امسح الإحصائيات"
+ },
+ "act.clear.confirm": {
+  "en": "Clear all stats?",
+  "ar": "تمسح كل الإحصائيات؟"
+ },
+ "act.clear.confirmDesc": {
+  "en": "This can’t be undone.",
+  "ar": "مش هتقدر ترجّعها تاني."
+ },
+ "act.dir": {
+  "en": "Direction",
+  "ar": "اتجاه التحويل"
+ },
+ "act.dir.toArabic": {
+  "en": "English → Arabic",
+  "ar": "English ← عربي"
+ },
+ "act.dir.toEnglish": {
+  "en": "Arabic → English",
+  "ar": "عربي ← English"
+ },
+ "act.foot": {
+  "en": "Stats never leave your computer. Hawwel never stores the text itself.",
+  "ar": "الإحصائيات مش بتطلع برا جهازك. Hawwel مش بيحفظ الكلام نفسه."
+ },
+ "act.last7": {
+  "en": "Last 7 days",
+  "ar": "آخر 7 أيام"
+ },
+ "act.time": {
+  "en": "time saved",
+  "ar": "وقت وفّرته"
+ },
+ "act.total": {
+  "en": "conversions",
+  "ar": "مرة تحويل"
+ },
+ "act.week": {
+  "en": "last 7 days",
+  "ar": "آخر 7 أيام"
+ },
+ "app.name": {
+  "en": "Hawwel",
+  "ar": "حوّل"
+ },
+ "badge.new": {
+  "en": "New",
+  "ar": "جديد"
+ },
+ "common.cancel": {
+  "en": "Cancel",
+  "ar": "إلغاء"
+ },
+ "day.1": {
+  "en": "Sun",
+  "ar": "حد"
+ },
+ "day.2": {
+  "en": "Mon",
+  "ar": "اتنين"
+ },
+ "day.3": {
+  "en": "Tue",
+  "ar": "تلات"
+ },
+ "day.4": {
+  "en": "Wed",
+  "ar": "أربع"
+ },
+ "day.5": {
+  "en": "Thu",
+  "ar": "خميس"
+ },
+ "day.6": {
+  "en": "Fri",
+  "ar": "جمعة"
+ },
+ "day.7": {
+  "en": "Sat",
+  "ar": "سبت"
+ },
+ "err.tools": {
+  "en": "Hawwel can’t copy and paste yet. See Home.",
+  "ar": "Hawwel لسه مش قادر ينسخ ويلصق. شوف الرئيسية."
+ },
+ "footer.copyright": {
+  "en": "© 2026 Ashraf Abdulmonem. All rights reserved.",
+  "ar": "جميع الحقوق محفوظة © 2026 Ashraf Abdulmonem"
+ },
+ "home.hero.desc": {
+  "en": "Select text typed in the wrong layout and press",
+  "ar": "حدد الكلام اللي اتكتب بالكيبورد الغلط، واضغط"
+ },
+ "home.hero.descOff": {
+  "en": "Go to Shortcuts to connect it to your desktop.",
+  "ar": "روح للاختصارات علشان توصّله بالديسكتوب."
+ },
+ "home.hero.title": {
+  "en": "Hawwel is running",
+  "ar": "Hawwel شغّال وجاهز"
+ },
+ "home.hero.titleOff": {
+  "en": "Finish setting up the shortcut",
+  "ar": "كمّل ظبط الاختصار"
+ },
+ "home.sys.copied": {
+  "en": "Copied ✓",
+  "ar": "اتنسخ ✓"
+ },
+ "home.sys.copy": {
+  "en": "Copy install command",
+  "ar": "انسخ أمر التسطيب"
+ },
+ "home.sys.off": {
+  "en": "Missing",
+  "ar": "ناقص"
+ },
+ "home.sys.offDesc": {
+  "en": "Hawwel needs {0} to copy and paste for you. Install it, then reopen Hawwel.",
+  "ar": "Hawwel محتاج {0} علشان ينسخ ويلصق بدالك. سطّبهم وافتح Hawwel تاني."
+ },
+ "home.sys.ok": {
+  "en": "All set",
+  "ar": "كله تمام"
+ },
+ "home.sys.okDesc": {
+  "en": "{0} is supported and the tools Hawwel needs are installed.",
+  "ar": "{0} مدعوم، والأدوات اللي Hawwel محتاجها متسطّبة."
+ },
+ "home.sys.title": {
+  "en": "System",
+  "ar": "النظام"
+ },
+ "home.sys.ydotoold": {
+  "en": "ydotool needs its background service. Run: systemctl --user enable --now ydotool",
+  "ar": "ydotool محتاج الخدمة بتاعته شغّالة. شغّل: systemctl --user enable --now ydotool"
+ },
+ "home.toActivity": {
+  "en": "Activity →",
+  "ar": "النشاط ←"
+ },
+ "home.today": {
+  "en": "Today",
+  "ar": "النهارده"
+ },
+ "home.today.chars": {
+  "en": "characters",
+  "ar": "حرف"
+ },
+ "home.today.conv": {
+  "en": "conversions",
+  "ar": "تحويل"
+ },
+ "home.today.saved": {
+  "en": "saved",
+  "ar": "وفّرتهم"
+ },
+ "home.update.desc": {
+  "en": "Download the new version from GitHub.",
+  "ar": "نزّل النسخة الجديدة من GitHub."
+ },
+ "home.update.downloading": {
+  "en": "Downloading the update…",
+  "ar": "بنزّل التحديث…"
+ },
+ "home.update.failed": {
+  "en": "Update failed: {0}",
+  "ar": "فشل التحديث: {0}"
+ },
+ "home.update.now": {
+  "en": "Download",
+  "ar": "نزّلها"
+ },
+ "home.update.title": {
+  "en": "Version {0} is available",
+  "ar": "فيه نسخة جديدة: {0}"
+ },
+ "menu.convert": {
+  "en": "Convert selected text",
+  "ar": "حوّل النص المحدد"
+ },
+ "menu.open": {
+  "en": "Open Hawwel",
+  "ar": "فتح Hawwel"
+ },
+ "menu.quit": {
+  "en": "Quit",
+  "ar": "خروج"
+ },
+ "menu.update": {
+  "en": "Check for updates…",
+  "ar": "دوّر على تحديث…"
+ },
+ "sc.change": {
+  "en": "Change",
+  "ar": "غيّر"
+ },
+ "sc.conflict": {
+  "en": "Conflict",
+  "ar": "متعارض"
+ },
+ "sc.conflict.desc": {
+  "en": "Your desktop already uses this shortcut. Pick another one.",
+  "ar": "الديسكتوب بيستخدم الاختصار ده. اختار واحد تاني."
+ },
+ "sc.flip.desc": {
+  "en": "Converts the selected text to the other layout.",
+  "ar": "بيحوّل الكلام المحدد للغة التانية."
+ },
+ "sc.flip.title": {
+  "en": "Flip text (Arabic ⇄ English)",
+  "ar": "قلب الكلام (عربي ⇄ English)"
+ },
+ "sc.foot": {
+  "en": "The shortcut works in every app",
+  "ar": "الاختصار شغّال في أي برنامج"
+ },
+ "sc.rec.desc": {
+  "en": "Press the keys together. Esc to cancel.",
+  "ar": "اضغط الأزرار اللي عايزها مع بعض. Esc للإلغاء."
+ },
+ "sc.rec.needMod": {
+  "en": "Use Ctrl, Alt, Shift or Super with the key.",
+  "ar": "لازم تستخدم Ctrl أو Alt أو Shift أو Super مع المفتاح."
+ },
+ "sc.rec.title": {
+  "en": "Recording a new shortcut…",
+  "ar": "بيسجّل اختصار جديد…"
+ },
+ "sc.resetDefault": {
+  "en": "Restore default shortcuts",
+  "ar": "رجّع الاختصارات الافتراضية"
+ },
+ "sc.setup.copied": {
+  "en": "Copied ✓",
+  "ar": "اتنسخ ✓"
+ },
+ "sc.setup.copy": {
+  "en": "Copy command",
+  "ar": "انسخ الأمر"
+ },
+ "sc.setup.failed": {
+  "en": "Couldn’t save the shortcut to GNOME. Try again.",
+  "ar": "معرفتش أحفظ الاختصار في GNOME، جرّب تاني."
+ },
+ "sc.setup.gnome": {
+  "en": "Applied to GNOME settings automatically.",
+  "ar": "اتظبط في إعدادات GNOME لوحده."
+ },
+ "sc.setup.manual": {
+  "en": "Your desktop doesn’t let apps set shortcuts. Add one yourself in your keyboard settings with this command:",
+  "ar": "الديسكتوب بتاعك ما بيسمحش للبرامج تعمل اختصارات. ضيفه بنفسك من إعدادات الكيبورد بالأمر ده:"
+ },
+ "sc.setup.openKb": {
+  "en": "Open keyboard settings",
+  "ar": "افتح إعدادات الكيبورد"
+ },
+ "sc.soon": {
+  "en": "Soon",
+  "ar": "قريباً"
+ },
+ "sc.soon.desc": {
+  "en": "Each new feature will get its own shortcut here.",
+  "ar": "كل ميزة هتنزل هيبقى ليها اختصار خاص بيها هنا."
+ },
+ "sc.soon.title": {
+  "en": "More features coming",
+  "ar": "ميزات جديدة جاية"
+ },
+ "set.appearance": {
+  "en": "Appearance",
+  "ar": "المظهر"
+ },
+ "set.appearance.dark": {
+  "en": "Dark",
+  "ar": "داكن"
+ },
+ "set.appearance.light": {
+  "en": "Light",
+  "ar": "فاتح"
+ },
+ "set.appearance.system": {
+  "en": "System",
+  "ar": "زي النظام"
+ },
+ "set.autoCheck": {
+  "en": "Check for updates automatically",
+  "ar": "دوّر على التحديثات تلقائياً"
+ },
+ "set.autoCheck.desc": {
+  "en": "Only connects to GitHub",
+  "ar": "بيتصل بـ GitHub بس"
+ },
+ "set.check": {
+  "en": "Check for updates",
+  "ar": "دوّر على تحديث"
+ },
+ "set.check.checking": {
+  "en": "Checking…",
+  "ar": "بدوّر…"
+ },
+ "set.check.failed": {
+  "en": "Couldn’t reach GitHub. Check your connection and try again.",
+  "ar": "معرفتش أوصل لـ GitHub، اتأكد من النت وجرّب تاني."
+ },
+ "set.check.found": {
+  "en": "A new version is available. See Home.",
+  "ar": "فيه إصدار جديد، شوف الرئيسية."
+ },
+ "set.check.last": {
+  "en": "last checked {0}",
+  "ar": "آخر فحص {0}"
+ },
+ "set.check.now": {
+  "en": "Check now",
+  "ar": "دوّر دلوقتي"
+ },
+ "set.check.upToDate": {
+  "en": "You’re on the latest version ✓",
+  "ar": "إنت على آخر إصدار ✓"
+ },
+ "set.check.version": {
+  "en": "You have v{0}",
+  "ar": "عندك v{0}"
+ },
+ "set.conversion": {
+  "en": "Conversion",
+  "ar": "التحويل"
+ },
+ "set.general": {
+  "en": "General",
+  "ar": "عام"
+ },
+ "set.language": {
+  "en": "Language",
+  "ar": "لغة الواجهة"
+ },
+ "set.login": {
+  "en": "Open Hawwel at login",
+  "ar": "شغّل Hawwel مع بداية الجهاز"
+ },
+ "set.login.error": {
+  "en": "Couldn’t change this setting. Try again.",
+  "ar": "معرفتش أغيّر الإعداد ده، جرّب تاني."
+ },
+ "set.menubar": {
+  "en": "Show Hawwel in the system tray",
+  "ar": "أظهر Hawwel في الـ System Tray"
+ },
+ "set.menubar.desc": {
+  "en": "If off, open Hawwel again from your apps menu",
+  "ar": "لو قفلتها، افتح Hawwel تاني من قايمة البرامج"
+ },
+ "set.menubar.unavailable": {
+  "en": "Your desktop has no tray. On GNOME, turn on the AppIndicator extension.",
+  "ar": "الديسكتوب بتاعك مفيهوش tray. على GNOME فعّل إضافة AppIndicator."
+ },
+ "set.quit": {
+  "en": "Quit Hawwel",
+  "ar": "خروج من Hawwel"
+ },
+ "set.resetAll": {
+  "en": "Reset all settings",
+  "ar": "رجّع كل الإعدادات"
+ },
+ "set.resetAll.confirm": {
+  "en": "Reset all settings?",
+  "ar": "ترجّع كل الإعدادات؟"
+ },
+ "set.resetAll.confirmDesc": {
+  "en": "Appearance, menu bar, sounds and the shortcut go back to their defaults. Your stats and language stay.",
+  "ar": "المظهر والمنيو بار والصوت والاختصار هيرجعوا للافتراضي. الإحصائيات واللغة هيفضلوا زي ما هم."
+ },
+ "set.sound": {
+  "en": "Play a sound on convert",
+  "ar": "صوت خفيف عند التحويل"
+ },
+ "set.sound.desc": {
+  "en": "A short, quiet chime when the text is converted",
+  "ar": "نغمة قصيرة وهادية لما الكلام يتحوّل"
+ },
+ "set.updates": {
+  "en": "Updates",
+  "ar": "التحديثات"
+ },
+ "side.collapse": {
+  "en": "Collapse sidebar",
+  "ar": "صغّر السايدبار"
+ },
+ "side.expand": {
+  "en": "Expand sidebar",
+  "ar": "كبّر السايدبار"
+ },
+ "side.needsPermission": {
+  "en": "Setup needed",
+  "ar": "محتاج ظبط"
+ },
+ "side.running": {
+  "en": "Running · {0}",
+  "ar": "شغّال · {0}"
+ },
+ "sub.activity": {
+  "en": "Your stats stay on this computer",
+  "ar": "إحصائياتك محفوظة على جهازك بس"
+ },
+ "sub.home": {
+  "en": "Everything you need in one place",
+  "ar": "كل حاجة محتاجها في مكان واحد"
+ },
+ "sub.settings": {
+  "en": "Make Hawwel work your way",
+  "ar": "ظبط Hawwel على مزاجك"
+ },
+ "sub.shortcuts": {
+  "en": "Every feature gets its own shortcut",
+  "ar": "كل ميزة ليها اختصار خاص بيها"
+ },
+ "tab.about": {
+  "en": "About Hawwel",
+  "ar": "عن حوّل"
+ },
+ "tab.activity": {
+  "en": "Activity",
+  "ar": "النشاط"
+ },
+ "tab.home": {
+  "en": "Home",
+  "ar": "الرئيسية"
+ },
+ "tab.settings": {
+  "en": "Settings",
+  "ar": "الإعدادات"
+ },
+ "tab.shortcuts": {
+  "en": "Shortcuts",
+  "ar": "الاختصارات"
+ },
+ "time.ago.day": {
+  "en": "{0} days ago",
+  "ar": "من {0} يوم"
+ },
+ "time.ago.hour": {
+  "en": "{0} h ago",
+  "ar": "من {0} ساعة"
+ },
+ "time.ago.min": {
+  "en": "{0} min ago",
+  "ar": "من {0} دقيقة"
+ },
+ "time.ago.now": {
+  "en": "just now",
+  "ar": "دلوقتي"
+ },
+ "time.hour": {
+  "en": "{0} h",
+  "ar": "{0} س"
+ },
+ "time.lessThanMin": {
+  "en": "<1 min",
+  "ar": "أقل من دقيقة"
+ },
+ "time.min": {
+  "en": "~{0} min",
+  "ar": "{0} د"
+ },
+ "tray.balloon": {
+  "en": "Version {0} is available. Open Hawwel to download it.",
+  "ar": "إصدار جديد ({0}) متاح. افتح Hawwel ونزّله."
+ },
+ "tray.tooltip": {
+  "en": "Hawwel",
+  "ar": "حوّل - Hawwel"
+ },
+ "try.placeholder": {
+  "en": "Type in the wrong layout… e.g. اثممخ صخقمي",
+  "ar": "اكتب بالكيبورد الغلط… مثلاً hgsghl ugd;l"
+ },
+ "try.reset": {
+  "en": "Reset example",
+  "ar": "رجّع المثال"
+ },
+ "try.sample": {
+  "en": "اثممخ صخقمي",
+  "ar": "hgsghl ugd;l"
+ },
+ "try.state.done": {
+  "en": "Converted",
+  "ar": "اتحوّل"
+ },
+ "try.state.noSel": {
+  "en": "Select some text first",
+  "ar": "حدد الكلام الأول"
+ },
+ "try.state.ready": {
+  "en": "Ready",
+  "ar": "جاهز"
+ },
+ "try.state.sel": {
+  "en": "Now press the shortcut",
+  "ar": "تمام، اضغط الاختصار دلوقتي"
+ },
+ "try.step1": {
+  "en": "Type",
+  "ar": "اكتب"
+ },
+ "try.step2": {
+  "en": "Select the text",
+  "ar": "حدد الكلام"
+ },
+ "try.step3": {
+  "en": "Press the shortcut",
+  "ar": "اضغط الاختصار"
+ },
+ "try.title": {
+  "en": "Try it",
+  "ar": "جرّب هنا"
+ }
+}
