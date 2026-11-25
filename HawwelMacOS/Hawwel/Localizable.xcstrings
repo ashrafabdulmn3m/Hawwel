@@ -98,13 +98,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fixed converting text in Adobe apps (Photoshop, Illustrator, InDesign, Premiere, After Effects)"
+            "value": "After Effects now converts both ways (Arabic ⇄ English)"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اتصلّح التحويل في برامج Adobe (فوتوشوب، Illustrator، InDesign، Premiere، After Effects)"
+            "value": "After Effects بقى بيحوّل في الاتجاهين (عربي ⇄ English)"
           }
         }
       }
@@ -115,13 +115,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Conversion is faster in other apps too"
+            "value": "Adobe apps work even when your keyboard is set to Arabic"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "التحويل بقى أسرع في باقي البرامج كمان"
+            "value": "برامج Adobe بقت شغالة حتى لو الكيبورد على العربي"
           }
         }
       }

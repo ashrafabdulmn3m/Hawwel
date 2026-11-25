@@ -10,6 +10,8 @@ import Carbon
 final class LayoutConverter {
     private var enToAr: [String: String] = [:]
     private var arToEn: [String: String] = [:]
+    /// كل حرف بيتكتب بأنهي زرار (وهل محتاج Shift) — علشان نكتب في برامج زي Adobe بالزرار الحقيقي
+    private var keys: [String: (code: CGKeyCode, shift: Bool)] = [:]
     /// الكيبوردين اللي اتبنى عليهم الجدول (علشان نعرف نبنيه تاني لو المستخدم غيّر الكيبورد)
     private(set) var layoutIDs: (en: String, ar: String) = ("", "")
 
@@ -35,6 +37,8 @@ final class LayoutConverter {
                       let a = Self.char(keyCode, shift, ar) else { continue }
                 enToAr[e] = a
                 arToEn[a] = e
+                if keys[e] == nil { keys[e] = (CGKeyCode(keyCode), shift) }
+                if keys[a] == nil { keys[a] = (CGKeyCode(keyCode), shift) }
             }
         }
     }
@@ -42,18 +46,51 @@ final class LayoutConverter {
     /// يحوّل النص تلقائياً حسب الاتجاه.
     /// capsLock: حالة Caps Lock وقت التحويل، علشان الحروف الكبيرة بسببه ما تتحوّلش كأنها Shift.
     func convert(_ text: String, capsLock: Bool = false) -> String {
+        let text = Self.normalize(text)
         if isToArabic(text) { return map(fixCapsLock(text, capsLock: capsLock), enToAr) }
         return map(text, arToEn)
     }
 
+    /// برامج زي After Effects بتنسخ العربي بأشكال الحروف المتشكّلة (Presentation Forms: ﻣ ﺮ ﺣ ﺒ ﺎ ﻻ)
+    /// بدل الحروف العادية (م ر ح ب ا لا)، ومعاها علامات اتجاه مخفية. بنرجّعها للحروف العادية الأول.
+    static func normalize(_ text: String) -> String {
+        var out = ""
+        for ch in text {
+            let scalars = ch.unicodeScalars
+            // علامات الاتجاه المخفية (LRM/RLM/LRE…/LRI…) ملهاش لازمة في التحويل
+            if scalars.allSatisfy({ (0x200E...0x200F).contains($0.value) || (0x202A...0x202E).contains($0.value)
+                                    || (0x2066...0x2069).contains($0.value) }) { continue }
+            if scalars.contains(where: { (0xFB50...0xFDFF).contains($0.value) || (0xFE70...0xFEFF).contains($0.value) }) {
+                out += String(ch).precomposedStringWithCompatibilityMapping // NFKC: ﻣ → م، ﻻ → لا
+            } else {
+                out.append(ch)
+            }
+        }
+        return out
+    }
+
     /// النص هيتحوّل لعربي؟ (لو أغلب حروفه لاتيني)
     func isToArabic(_ text: String) -> Bool {
+        let text = Self.normalize(text)
         let latin = text.unicodeScalars.filter { $0.properties.isAlphabetic && $0.isASCII }.count
         let arabic = text.unicodeScalars.filter { (0x0600...0x06FF).contains($0.value) }.count
         return latin > arabic
     }
 
     /// بيغيّر كيبورد الماك للكيبورد ده، لو المستخدم مفعّله.
+    /// الزرار اللي بيكتب الحرف ده (في الكيبورد الإنجليزي أو العربي)
+    func key(for character: String) -> (code: CGKeyCode, shift: Bool)? {
+        if character == " " { return (49, false) } // Space
+        return keys[character]
+    }
+
+    /// كيبورد الماك الحالي (علشان نرجّعه بعد الكتابة لو المستخدم مش عايز التبديل)
+    static func currentInputSourceID() -> String? {
+        guard let src = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue(),
+              let p = TISGetInputSourceProperty(src, kTISPropertyInputSourceID) else { return nil }
+        return Unmanaged<CFString>.fromOpaque(p).takeUnretainedValue() as String
+    }
+
     static func selectInputSource(id: String) {
         let filter = [kTISPropertyInputSourceID as String: id] as CFDictionary
         guard let list = TISCreateInputSourceList(filter, false)?.takeRetainedValue() as? [TISInputSource],

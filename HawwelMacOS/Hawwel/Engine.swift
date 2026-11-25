@@ -95,25 +95,34 @@ final class Engine: ObservableObject {
 
         // لازم المستخدم يرفع إيده من كل الزراير (Ctrl/⌥/⇧/⌘) قبل ما نبعت ⌘C:
         // برامج زي Adobe بتقرا الزراير اللي متداسة فعلاً، فلو Ctrl لسه متداس هتشوفها ⌃⌘C
+        // برامج Adobe (زي After Effects) بتقرا الاختصار بالحرف اللي الزرار بيكتبه في الكيبورد الحالي:
+        // لو الكيبورد عربي، ⌘C بتوصلها ⌘ؤ ومش بتنسخ. فبنحوّل للإنجليزي لحظة قبل النسخ.
+        let originalSource = adobe ? LayoutConverter.currentInputSourceID() : nil
         waitForModifiersReleased { [weak self] in
-            self?.copySelection(pb, timeout: adobe ? 1.2 : 0.6) { [weak self] text in
-                guard let self else { return }
-                guard let text else {
-                    // مفيش كلام محدد: ما نعملش حاجة ونقول للمستخدم يحدد الأول
-                    self.restore(pb, saved)
-                    self.busy = false
-                    self.finish(.noSelection)
-                    return
-                }
-                let toArabic = converter.isToArabic(text)
-                let output = converter.convert(text, capsLock: capsLock)
-                self.replace(with: output, pb, saved, front: front) {
-                    self.busy = false
-                    self.finish(.converted)
-                    if !isPractice {
-                        self.stats.record(chars: text.count, toArabic: toArabic, app: front?.localizedName)
+            if adobe { LayoutConverter.selectInputSource(id: converter.layoutIDs.en) }
+            let delay: TimeInterval = adobe ? 0.12 : 0
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                self?.copySelection(pb, timeout: adobe ? 1.2 : 0.6) { [weak self] text in
+                    guard let self else { return }
+                    guard let text else {
+                        // مفيش كلام محدد: ما نعملش حاجة ونقول للمستخدم يحدد الأول
+                        if let originalSource { LayoutConverter.selectInputSource(id: originalSource) }
+                        self.restore(pb, saved)
+                        self.busy = false
+                        self.finish(.noSelection)
+                        return
                     }
-                    self.afterConvert(toArabic: toArabic, converter: converter)
+                    let toArabic = converter.isToArabic(text)
+                    let output = converter.convert(text, capsLock: capsLock)
+                    self.replace(with: output, pb, saved, front: front, toArabic: toArabic, converter: converter,
+                                 originalSource: originalSource) {
+                        self.busy = false
+                        self.finish(.converted)
+                        if !isPractice {
+                            self.stats.record(chars: text.count, toArabic: toArabic, app: front?.localizedName)
+                        }
+                        self.afterConvert(toArabic: toArabic, converter: converter)
+                    }
                 }
             }
         }
@@ -167,14 +176,25 @@ final class Engine: ObservableObject {
     }
 
     private func replace(with text: String, _ pb: NSPasteboard, _ saved: [NSPasteboardItem],
-                         front: NSRunningApplication?, completion: @escaping () -> Void) {
+                         front: NSRunningApplication?, toArabic: Bool, converter: LayoutConverter,
+                         originalSource: String?, completion: @escaping () -> Void) {
         let adobe = front?.bundleIdentifier?.hasPrefix("com.adobe") == true
 
         if adobe {
-            // برامج Adobe: نرجّع الـ clipboard فوراً ونكتب النص بدل اللصق
+            // برامج Adobe: نرجّع الـ clipboard فوراً ونكتب النص بدل اللصق.
+            // بعضها (زي After Effects) بيكتب الحروف الإنجليزي حسب الزرار والكيبورد الحالي،
+            // فبنحوّل الكيبورد للغة الكلام الجديد الأول، ونكتب كل حرف بالزرار بتاعه.
             restore(pb, saved)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.typeText(text)
+            let original = originalSource ?? LayoutConverter.currentInputSourceID()
+            LayoutConverter.selectInputSource(id: toArabic ? converter.layoutIDs.ar : converter.layoutIDs.en)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                self.typeText(text, converter: converter)
+                // لو المستخدم مقفّل "غيّر لغة الكيبورد بعد التحويل"، نرجّعه زي ما كان
+                if !UserDefaults.standard.bool(forKey: Prefs.switchKeyboard), let original {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        LayoutConverter.selectInputSource(id: original)
+                    }
+                }
                 completion()
             }
             return
@@ -218,20 +238,24 @@ final class Engine: ObservableObject {
         up?.post(tap: .cghidEventTap)
     }
     /// بيكتب النص حرف حرف (برامج Adobe بتتجاهل اللصق والأحداث اللي فيها كذا حرف مع بعض).
-    /// كل حدث من غير أي زرار تعديل، علشان لو Ctrl لسه متداس ما يتحسبش اختصار.
-    private func typeText(_ text: String) {
+    /// كل حرف بالزرار الحقيقي بتاعه (+ Shift لو محتاج) والحرف نفسه معاه،
+    /// ومن غير أي زرار تعديل تاني علشان لو Ctrl لسه متداس ما يتحسبش اختصار.
+    private func typeText(_ text: String, converter: LayoutConverter) {
         let src = CGEventSource(stateID: .privateState)
         for ch in text {
-            let units = Array(String(ch).utf16)
+            let s = String(ch)
+            let units = Array(s.utf16)
+            let key = converter.key(for: s)
             for keyDown in [true, false] {
-                guard let e = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: keyDown) else { continue }
-                e.flags = []
+                guard let e = CGEvent(keyboardEventSource: src, virtualKey: key?.code ?? 0, keyDown: keyDown) else { continue }
+                e.flags = key?.shift == true ? .maskShift : []
                 e.keyboardSetUnicodeString(stringLength: units.count, unicodeString: units)
                 e.post(tap: .cghidEventTap)
             }
             usleep(4000) // 4ms بين كل حرف علشان البرنامج ما يفوّتش حاجة
         }
     }
+
 
 }
 
