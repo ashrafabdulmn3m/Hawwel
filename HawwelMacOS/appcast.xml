@@ -7,6 +7,25 @@
     <language>en</language>
 
     <item>
+      <title>Version 2.0.2</title>
+      <pubDate>Wed, 25 Nov 2026 21:00:00 +0200</pubDate>
+      <sparkle:version>9</sparkle:version>
+      <sparkle:shortVersionString>2.0.2</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+        <ul>
+          <li>After Effects now converts both ways (Arabic ⇄ English)</li>
+          <li>Adobe apps work even when your keyboard is set to Arabic</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.2/Hawwel-2.0.2.dmg"
+        sparkle:edSignature="1heBlrzq6pxneQy6dZ8rM/eGoymxazSEq7PGL+4iAPPN1cl11IILsUiKR7xWQIscClk2F76CKqbigh3PyzCDDg=="
+        length="2655267"
+        type="application/octet-stream"/>
+    </item>
+
+    <item>
       <title>Version 2.0.1</title>
       <pubDate>Wed, 25 Nov 2026 20:15:00 +0200</pubDate>
       <sparkle:version>8</sparkle:version>
