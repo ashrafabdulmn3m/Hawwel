@@ -29,14 +29,14 @@
       "localizations": {
         "ar": {
           "stringUnit": {
-            "state": "translated",
-            "value": "بلّغ عن مشكلة"
+            "state": "needs_review",
+            "value": "قناة اليوتيوب"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Report a bug"
+            "value": "Our Channel in Youtube"
           }
         }
       }
@@ -47,7 +47,7 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "اقترح ميزة"
+            "value": "اقترح ميزة أو اعرض مشكلة"
           }
         },
         "en": {
@@ -95,16 +95,16 @@
     "about.log.1": {
       "extractionState": "manual",
       "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تصميم جديد بسايدبار، وHawwel بقى بالإنجليزي كمان"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A new design with a sidebar, and Hawwel now speaks English too"
+            "value": "Fixed converting text in Adobe apps (Photoshop, Illustrator, InDesign, Premiere, After Effects)"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اتصلّح التحويل في برامج Adobe (فوتوشوب، Illustrator، InDesign، Premiere، After Effects)"
           }
         }
       }
@@ -112,16 +112,16 @@
     "about.log.2": {
       "extractionState": "manual",
       "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تاب النشاط: إحصائيات التحويل، محفوظة على جهازك بس"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Activity tab: your conversion stats, saved only on your Mac"
+            "value": "Conversion is faster in other apps too"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحويل بقى أسرع في باقي البرامج كمان"
           }
         }
       }
@@ -1641,6 +1641,23 @@
         }
       }
     },
+    "set.sound.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نغمة قصيرة وهادية لما الكلام يتحوّل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A short, quiet chime when the text is converted"
+          }
+        }
+      }
+    },
     "set.switchKb": {
       "extractionState": "manual",
       "localizations": {
@@ -2151,24 +2168,7 @@
         }
       }
     },
-    "v%@": {},
-    "set.sound.desc": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A short, quiet chime when the text is converted"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نغمة قصيرة وهادية لما الكلام يتحوّل"
-          }
-        }
-      }
-    }
+    "v%@": {}
   },
   "version": "1.0"
 }

@@ -3,7 +3,7 @@ import Combine
 
 struct AboutTab: View {
     /// الجديد في الإصدار ده (النصوص في Localizable: about.log.1 … about.log.N)
-    private static let changelogCount = 5
+    private static let changelogCount = 2
 
     var body: some View {
         VStack(spacing: HW.gap) {

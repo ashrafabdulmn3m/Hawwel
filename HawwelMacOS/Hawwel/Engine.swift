@@ -91,26 +91,45 @@ final class Engine: ObservableObject {
 
         let pb = NSPasteboard.general
         let saved = snapshot(pb)
+        let adobe = front?.bundleIdentifier?.hasPrefix("com.adobe") == true
 
-        copySelection(pb) { [weak self] text in
-            guard let self else { return }
-            guard let text else {
-                // مفيش كلام محدد: ما نعملش حاجة ونقول للمستخدم يحدد الأول
-                self.restore(pb, saved)
-                self.busy = false
-                self.finish(.noSelection)
-                return
-            }
-            let toArabic = converter.isToArabic(text)
-            let output = converter.convert(text, capsLock: capsLock)
-            self.replace(with: output, pb, saved, front: front) {
-                self.busy = false
-                self.finish(.converted)
-                if !isPractice {
-                    self.stats.record(chars: text.count, toArabic: toArabic, app: front?.localizedName)
+        // لازم المستخدم يرفع إيده من كل الزراير (Ctrl/⌥/⇧/⌘) قبل ما نبعت ⌘C:
+        // برامج زي Adobe بتقرا الزراير اللي متداسة فعلاً، فلو Ctrl لسه متداس هتشوفها ⌃⌘C
+        waitForModifiersReleased { [weak self] in
+            self?.copySelection(pb, timeout: adobe ? 1.2 : 0.6) { [weak self] text in
+                guard let self else { return }
+                guard let text else {
+                    // مفيش كلام محدد: ما نعملش حاجة ونقول للمستخدم يحدد الأول
+                    self.restore(pb, saved)
+                    self.busy = false
+                    self.finish(.noSelection)
+                    return
                 }
-                self.afterConvert(toArabic: toArabic, converter: converter)
+                let toArabic = converter.isToArabic(text)
+                let output = converter.convert(text, capsLock: capsLock)
+                self.replace(with: output, pb, saved, front: front) {
+                    self.busy = false
+                    self.finish(.converted)
+                    if !isPractice {
+                        self.stats.record(chars: text.count, toArabic: toArabic, app: front?.localizedName)
+                    }
+                    self.afterConvert(toArabic: toArabic, converter: converter)
+                }
             }
+        }
+    }
+
+    /// بيستنى لحد ما مفيش أي زرار تعديل متداس (لحد ثانية بالكتير)
+    private func waitForModifiersReleased(_ then: @escaping () -> Void, deadline: Date = Date().addingTimeInterval(1)) {
+        let held = CGEventSource.flagsState(.hidSystemState)
+            .intersection([.maskCommand, .maskControl, .maskAlternate, .maskShift])
+        if held.isEmpty || Date() > deadline {
+            // مهلة صغيرة بعد ما الإيد تترفع علشان البرنامج يلحق ياخد الحدث
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: then)
+            return
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+            self.waitForModifiersReleased(then, deadline: deadline)
         }
     }
 
@@ -130,16 +149,21 @@ final class Engine: ObservableObject {
         }
     }
 
-    private func copySelection(_ pb: NSPasteboard, _ done: @escaping (String?) -> Void) {
+    /// بيبعت ⌘C وبيستنى الكلام يوصل للـ clipboard (برامج Adobe أبطأ، فبنستناها أكتر)
+    private func copySelection(_ pb: NSPasteboard, timeout: TimeInterval, _ done: @escaping (String?) -> Void) {
         let before = pb.changeCount
         press(8, .maskCommand) // Cmd+C
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+        let deadline = Date().addingTimeInterval(timeout)
+        func check() {
             if pb.changeCount != before, let t = pb.string(forType: .string), !t.isEmpty {
                 done(t)
-            } else {
+            } else if Date() > deadline {
                 done(nil)
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.03, execute: check)
             }
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.03, execute: check)
     }
 
     private func replace(with text: String, _ pb: NSPasteboard, _ saved: [NSPasteboardItem],
@@ -193,21 +217,22 @@ final class Engine: ObservableObject {
         down?.post(tap: .cghidEventTap)
         up?.post(tap: .cghidEventTap)
     }
+    /// بيكتب النص حرف حرف (برامج Adobe بتتجاهل اللصق والأحداث اللي فيها كذا حرف مع بعض).
+    /// كل حدث من غير أي زرار تعديل، علشان لو Ctrl لسه متداس ما يتحسبش اختصار.
     private func typeText(_ text: String) {
-        let src = CGEventSource(stateID: .combinedSessionState)
-        let utf16 = Array(text.utf16)
-        var i = 0
-        while i < utf16.count {
-            let chunk = Array(utf16[i..<min(i + 20, utf16.count)])
-            let down = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: true)
-            down?.keyboardSetUnicodeString(stringLength: chunk.count, unicodeString: chunk)
-            down?.post(tap: .cghidEventTap)
-            let up = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: false)
-            up?.keyboardSetUnicodeString(stringLength: chunk.count, unicodeString: chunk)
-            up?.post(tap: .cghidEventTap)
-            i += 20
+        let src = CGEventSource(stateID: .privateState)
+        for ch in text {
+            let units = Array(String(ch).utf16)
+            for keyDown in [true, false] {
+                guard let e = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: keyDown) else { continue }
+                e.flags = []
+                e.keyboardSetUnicodeString(stringLength: units.count, unicodeString: units)
+                e.post(tap: .cghidEventTap)
+            }
+            usleep(4000) // 4ms بين كل حرف علشان البرنامج ما يفوّتش حاجة
         }
     }
+
 }
 
 /// صوت التحويل: نغمتين ناعمتين وقصيرين (convert-sound.wav)، بصوت واطي.
