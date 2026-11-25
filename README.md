@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v2.0.0/Hawwel-Setup.exe"><b>⬇️ Download Hawwel Windows</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
+  <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.1/Hawwel-2.0.1.dmg"><b>⬇️ Download Hawwel MacOS</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/linux-v2.0.0/Hawwel-Linux.tar.gz"><b>⬇️ Download Hawwel Linux</b></a>
 </p>
@@ -37,7 +37,7 @@ Hawwel is a small app for **macOS, Windows and Linux** that converts text typed 
 | Platform | Download | Requirements |
 |---|---|---|
 | **Windows** | [**Download Hawwel Windows**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/win-v2.0.0/Hawwel-Setup.exe) (`Hawwel-Setup.exe`) | Windows 10 or 11, 64-bit |
-| **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg) (`Hawwel-2.0.0.dmg`) | macOS 14 or later |
+| **macOS** | [**Download Hawwel MacOS**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.1/Hawwel-2.0.1.dmg) (`Hawwel-2.0.1.dmg`) | macOS 14 or later |
 | **Linux** | [**Download Hawwel Linux**](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/linux-v2.0.0/Hawwel-Linux.tar.gz) (`Hawwel-Linux.tar.gz`) | Python 3.9+, X11 or Wayland |
 
 Older versions and release notes are on the [Releases page](https://github.com/ashrafabdulmn3m/Hawwel/releases).
@@ -58,8 +58,8 @@ To remove it: **Settings → Apps → Installed apps → Hawwel → Uninstall**.
 
 ## Install on macOS
 
-1. Download [`Hawwel-2.0.0.dmg`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.0/Hawwel-2.0.0.dmg).
-2. Open `Hawwel-2.0.0.dmg` and drag **Hawwel** to **Applications**.
+1. Download [`Hawwel-2.0.1.dmg`](https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.1/Hawwel-2.0.1.dmg).
+2. Open `Hawwel-2.0.1.dmg` and drag **Hawwel** to **Applications**.
 3. Open it. macOS will warn that the app is from an unidentified developer, because this version isn't notarized by Apple yet.
 4. Go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway**.
 5. If you don't see the button, run this in Terminal and open the app again:

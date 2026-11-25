@@ -7,6 +7,25 @@
     <language>en</language>
 
     <item>
+      <title>Version 2.0.1</title>
+      <pubDate>Wed, 25 Nov 2026 20:15:00 +0200</pubDate>
+      <sparkle:version>8</sparkle:version>
+      <sparkle:shortVersionString>2.0.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+        <ul>
+          <li>Converting text in Adobe apps works again (Photoshop, Illustrator, InDesign, Premiere, After Effects)</li>
+          <li>Faster conversion in other apps too</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/ashrafabdulmn3m/Hawwel/releases/download/macos-v2.0.1/Hawwel-2.0.1.dmg"
+        sparkle:edSignature="CpPtNQjvP294ufH7aORghvACgo6wUo4DUk4wr0E11KpmwdiQorpgpDuz+6qph/KSY1p/utIJzIC0tvbWBjE4CA=="
+        length="2647619"
+        type="application/octet-stream"/>
+    </item>
+
+    <item>
       <title>Version 2.0.0</title>
       <pubDate>Sun, 22 Nov 2026 20:05:00 +0200</pubDate>
       <sparkle:version>7</sparkle:version>
